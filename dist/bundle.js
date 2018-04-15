@@ -1450,9 +1450,16 @@ class PizzaDrawSevice {
       });
       this.host.append(this.canvas);
       let pizza = new __WEBPACK_IMPORTED_MODULE_1__Sprite__["a" /* default */](this.images["pizza"], 160, 160, 300, 300);
+
       this.sprites["pizza"] = pizza;
       this.spritesPool.push(pizza);
       this._draw();
+
+      setInterval(() => {
+        const corn = new __WEBPACK_IMPORTED_MODULE_1__Sprite__["a" /* default */](this.images["corn"], random(80,240), random(80,240), 25, 25);
+        this.spritesPool.push(corn);
+        this._draw();
+      }, 2000);
     });
   }
   
@@ -1479,6 +1486,10 @@ class PizzaDrawSevice {
       image.src = url;
     });
   }
+}
+
+function random(min, max) {
+  return Math.floor(min + Math.random() * (max - min + 1));
 }
 
 const PIZZA_DRAW_SERVICE = new PizzaDrawSevice();

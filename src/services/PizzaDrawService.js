@@ -27,9 +27,16 @@ class PizzaDrawSevice {
       });
       this.host.append(this.canvas);
       let pizza = new Sprite(this.images["pizza"], 160, 160, 300, 300);
+
       this.sprites["pizza"] = pizza;
       this.spritesPool.push(pizza);
       this._draw();
+
+      setInterval(() => {
+        const corn = new Sprite(this.images["corn"], random(80,240), random(80,240), 25, 25);
+        this.spritesPool.push(corn);
+        this._draw();
+      }, 2000);
     });
   }
   
@@ -56,6 +63,10 @@ class PizzaDrawSevice {
       image.src = url;
     });
   }
+}
+
+function random(min, max) {
+  return Math.floor(min + Math.random() * (max - min + 1));
 }
 
 export const PIZZA_DRAW_SERVICE = new PizzaDrawSevice();
