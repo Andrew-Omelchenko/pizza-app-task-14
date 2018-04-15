@@ -191,6 +191,8 @@ strong {
   padding: 10px;
 }
 
+// login and register
+
 .login-form,
 .register-form {
   display: flex;
@@ -214,6 +216,8 @@ strong {
   margin: 120px auto;
 }
 
+// my-info
+
 .register-form {
   margin: 48px auto;
 }
@@ -231,9 +235,48 @@ strong {
   }
 }
 
+// alert
+
 .alert-txt {
   font-size: 10pt;
   text-align: center;
   color: $fg-color-alert;
   margin: 20px 0 10px 0;
+}
+
+// pizza
+.pizza {
+  h1 {
+    margin: 15px auto;
+    font-size: 35px;
+    text-align: center;
+  }
+
+  .pizza-container {
+    display: flex;
+
+    #canvas-placeholder {
+      text-align: center;
+
+      canvas {
+        border: 2px solid #333;
+      }
+    }
+
+    section {
+      width: 50%;
+
+      label {
+        display: block;
+
+        & > label {
+          display: inline-block;
+        }
+      }
+
+      .check-holder > label {
+          display: inline-block;
+      }
+    }
+  }
 }

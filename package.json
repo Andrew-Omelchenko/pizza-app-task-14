@@ -10,15 +10,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Andrew-Omelchenko/pizza-app.git"
+    "url": "git+https://github.com/Andrew-Omelchenko/pizza-app-task-14.git"
   },
   "author": "Andrew Omelchenko",
   "license": "MIT",
   "private": true,
   "bugs": {
-    "url": "https://github.com/Andrew-Omelchenko/pizza-app/issues"
+    "url": "https://github.com/Andrew-Omelchenko/pizza-app-task-14/issues"
   },
-  "homepage": "https://github.com/Andrew-Omelchenko/pizza-app#readme",
+  "homepage": "https://github.com/Andrew-Omelchenko/pizza-app-task-14#readme",
   "devDependencies": {
     "eslint": "^4.18.0",
     "eslint-config-airbnb-base": "^12.1.0",

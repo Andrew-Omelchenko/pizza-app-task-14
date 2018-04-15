@@ -3,6 +3,7 @@ import Dashboard from "./components/Dashboard";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import MyInfo from "./components/MyInfo";
+import Pizza from "./components/Pizza";
 
 const routes = [
   {
@@ -25,6 +26,11 @@ const routes = [
   {
     href: "/my-info",
     component: MyInfo,
+    authorized: AUTH_SERVICE.isAuthorized
+  },
+  {
+    href: "/pizza",
+    component: Pizza,
     authorized: AUTH_SERVICE.isAuthorized
   },
   {
