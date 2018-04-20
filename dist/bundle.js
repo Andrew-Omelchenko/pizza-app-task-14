@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ 	return __webpack_require__(__webpack_require__.s = 10);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -78,6 +78,8 @@ class Component {
     this.host = null;
 
     Object(__WEBPACK_IMPORTED_MODULE_0__utils_helper__["a" /* bindAll */])(this, "updateState", "update");
+
+    this.onInit();
   }
 
   _render() {
@@ -96,10 +98,12 @@ class Component {
     return this.host;
   }
 
-  componentReveivedProps(nextProps) {}
+  onReceiveProps(nextProps) {}
+
+  onInit() {}
 
   update(nextProps) {
-    this.componentReveivedProps(nextProps);
+    this.onReceiveProps(nextProps);
     this.props = nextProps;
     return this._render();
   }
@@ -226,8 +230,8 @@ const API = {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_helper__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__framework_Component__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Clock__ = __webpack_require__(11);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Options__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Clock__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Options__ = __webpack_require__(15);
 
 
 
@@ -406,6 +410,79 @@ const AUTH_SERVICE = new AuthService();
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__AuthHttpService__ = __webpack_require__(7);
+
+
+
+class PizzaDataService {
+  constructor() {
+    this.crust_pizza = `${__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].BASE_URL}${__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].CRUST_PIZZA}`;
+    console.log(this.crust_pizza);
+
+    this.ingredients = [];
+    this.tags = [];
+    this.images = {};
+  }
+
+  _loadResources() {
+    let promises = [];
+    promises.push(this._loadImage("pizza", this.crust_pizza));
+    promises = promises.concat(this.ingredients.map(ingredient => {
+      const ingrUrl = `${__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].BASE_URL}${ingredient.image_url}`;
+      return this._loadImage(ingredient.name, ingrUrl);
+    }));
+    return Promise.all(promises);
+  }
+
+  _loadImage(name, url) {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve({ name, image });
+      image.onerror = (e) => reject(e);
+      image.src = url;
+    });
+  }
+
+  _getIngredients() {
+    return __WEBPACK_IMPORTED_MODULE_1__AuthHttpService__["a" /* AUTH_HTTP_SERVICE */].get(`${__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].ENDPOINTS.INGREDIENT_LIST}`)
+      .then(data => {
+        this.ingredients = data.answer.results;
+        return data;
+      });
+  }
+
+  _getTags() {
+    return __WEBPACK_IMPORTED_MODULE_1__AuthHttpService__["a" /* AUTH_HTTP_SERVICE */].get(`${__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].ENDPOINTS.TAG_LIST}`)
+      .then(data => {
+        this.tags = data.answer.results;
+        return data;
+      });
+  }
+
+  loadPizzaData() {
+    return Promise.all([
+      this._getIngredients()
+        .then(() => this._loadResources())
+        .then(resources => 
+          resources.forEach(
+            resource => this.images[resource.name] = resource.image
+          )
+        ),
+      this._getTags()
+    ]);
+  }
+}
+
+const PIZZA_DATA_SERVICE = new PizzaDataService();
+/* harmony export (immutable) */ __webpack_exports__["a"] = PIZZA_DATA_SERVICE;
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_helper__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__AuthService__ = __webpack_require__(5);
 
@@ -452,13 +529,136 @@ const AUTH_HTTP_SERVICE = new AuthHttpService();
 
 
 /***/ }),
-/* 7 */
+/* 8 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Sprite__ = __webpack_require__(9);
+
+
+
+class PizzaDrawSevice {
+  constructor() {
+    this.crust_pizza = `${__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].BASE_URL}${__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].CRUST_PIZZA}`;
+  }
+
+  init(initData) {
+    this.host = initData.host;
+    this.canvas = document.createElement("canvas");
+    this.ctx = this.canvas.getContext("2d");
+    this.canvasWidth = 320;
+    this.canvasHeight = 320;
+    this.ingredients = initData.ingredients;
+    this.images = {};
+
+    this.canvas.width = this.canvasWidth;
+    this.canvas.height = this.canvasHeight;
+
+    this.sprites = {};
+    this.spritesPool = [];
+
+    this._loadResources().then((resources) => {
+      resources.forEach(resource => {
+        this.images[resource.name] = resource.image;
+      });
+      this.host.append(this.canvas);
+      let pizza = new __WEBPACK_IMPORTED_MODULE_1__Sprite__["a" /* default */](this.images["pizza"], 160, 160, 300, 300);
+
+      this.sprites["pizza"] = pizza;
+      this.spritesPool.push(pizza);
+      this._draw();
+
+      setInterval(() => {
+        const corn = new __WEBPACK_IMPORTED_MODULE_1__Sprite__["a" /* default */](this.images["corn"], random(80,240), random(80,240), 25, 25);
+        this.spritesPool.push(corn);
+        this._draw();
+      }, 2000);
+    });
+  }
+  
+  _draw() {
+    this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+    this.spritesPool.forEach(sprite => sprite.draw(this.ctx));
+  }
+
+  _loadResources() {
+    let promises = [];
+    promises.push(this._loadImage("pizza", this.crust_pizza));
+    promises = promises.concat(this.ingredients.map(ingredient => {
+      const ingrUrl = `${__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].BASE_URL}${ingredient.image_url}`;
+      return this._loadImage(ingredient.name, ingrUrl);
+    }));
+    return Promise.all(promises);
+  }
+
+  _loadImage(name, url) {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve({ name, image });
+      image.onerror = (e) => reject(e);
+      image.src = url;
+    });
+  }
+}
+
+function random(min, max) {
+  return Math.floor(min + Math.random() * (max - min + 1));
+}
+
+const PIZZA_DRAW_SERVICE = new PizzaDrawSevice();
+/* harmony export (immutable) */ __webpack_exports__["a"] = PIZZA_DRAW_SERVICE;
+
+
+/***/ }),
+/* 9 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+class Sprite {
+  // cx, cy - center of the sprite
+  constructor(image, cx, cy, width, height) {
+    // order matters
+    this.image = image;
+    this.x = 0;
+    this.y = 0;
+    this.width = width || this.image.width;
+    this.height = height  || this.image.height;
+    this.cx = cx || 0;
+    this.cy = cy || 0;
+  }
+
+  get cx() {
+    return Math.round(this.x + this.width * 0.5);
+  }
+
+  get cy() {
+    return Math.round(this.y + this.height * 0.5);
+  }
+
+  set cx(value) {
+    this.x = Math.round(value - this.width * 0.5);
+  }
+
+  set cy(value) {
+    this.y = Math.round(value - this.height * 0.5);
+  }
+
+  draw(ctx) {
+    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+  }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (Sprite);
+
+/***/ }),
+/* 10 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Router__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__routes__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Router__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__routes__ = __webpack_require__(12);
 
 
 
@@ -466,7 +666,7 @@ const router = new __WEBPACK_IMPORTED_MODULE_0__framework_Router__["a" /* defaul
 
 
 /***/ }),
-/* 8 */
+/* 11 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -553,16 +753,18 @@ class Router extends __WEBPACK_IMPORTED_MODULE_0__Component__["a" /* default */]
 
 
 /***/ }),
-/* 9 */
+/* 12 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__services_AuthService__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_Dashboard__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_Login__ = __webpack_require__(14);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_Register__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_MyInfo__ = __webpack_require__(18);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_Pizza__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_Dashboard__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_Login__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_Register__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_MyInfo__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_Pizza__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_PizzaComposer__ = __webpack_require__(25);
+
 
 
 
@@ -599,6 +801,11 @@ const routes = [
     authorized: __WEBPACK_IMPORTED_MODULE_0__services_AuthService__["a" /* AUTH_SERVICE */].isAuthorized
   },
   {
+    href: "/create-pizza",
+    component: __WEBPACK_IMPORTED_MODULE_6__components_PizzaComposer__["a" /* default */],
+    authorized: __WEBPACK_IMPORTED_MODULE_0__services_AuthService__["a" /* AUTH_SERVICE */].isAuthorized
+  },
+  {
     href: "/logout",
     onEnter: navigateTo => {
       // console.log("Inside onEnter()");
@@ -612,13 +819,13 @@ const routes = [
 
 
 /***/ }),
-/* 10 */
+/* 13 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Component__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HeaderComponent__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__DashboardComponent__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__DashboardComponent__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__FooterComponent__ = __webpack_require__(4);
 
 
@@ -650,7 +857,7 @@ class Dashboard extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__["a" /
 
 
 /***/ }),
-/* 11 */
+/* 14 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -702,7 +909,7 @@ class Clock extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__["a" /* de
 
 
 /***/ }),
-/* 12 */
+/* 15 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -762,7 +969,7 @@ class Options extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__["a" /* 
 
 
 /***/ }),
-/* 13 */
+/* 16 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -819,13 +1026,13 @@ class DashboardComponent extends __WEBPACK_IMPORTED_MODULE_0__framework_Componen
 
 
 /***/ }),
-/* 14 */
+/* 17 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Component__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HeaderComponent__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__LoginComponent__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__LoginComponent__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__FooterComponent__ = __webpack_require__(4);
 
 
@@ -857,7 +1064,7 @@ class Login extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__["a" /* de
 
 
 /***/ }),
-/* 15 */
+/* 18 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -940,13 +1147,13 @@ class LoginComponent extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__[
 
 
 /***/ }),
-/* 16 */
+/* 19 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Component__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HeaderComponent__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__RegisterComponent__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__RegisterComponent__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__FooterComponent__ = __webpack_require__(4);
 
 
@@ -978,12 +1185,12 @@ class Register extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__["a" /*
 
 
 /***/ }),
-/* 17 */
+/* 20 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Component__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_AuthHttpService__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_AuthHttpService__ = __webpack_require__(7);
 
 
 
@@ -1116,13 +1323,13 @@ class RegisterComponent extends __WEBPACK_IMPORTED_MODULE_0__framework_Component
 
 
 /***/ }),
-/* 18 */
+/* 21 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Component__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HeaderComponent__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__MyInfoComponent__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__MyInfoComponent__ = __webpack_require__(22);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__FooterComponent__ = __webpack_require__(4);
 
 
@@ -1154,12 +1361,12 @@ class MyInfo extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__["a" /* d
 
 
 /***/ }),
-/* 19 */
+/* 22 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Component__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_AuthHttpService__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_AuthHttpService__ = __webpack_require__(7);
 
 
 
@@ -1209,13 +1416,13 @@ class MyInfoComponent extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__
 
 
 /***/ }),
-/* 20 */
+/* 23 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Component__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HeaderComponent__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__PizzaComponent__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__PizzaComponent__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__FooterComponent__ = __webpack_require__(4);
 
 
@@ -1236,7 +1443,7 @@ class Login extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__["a" /* de
 
   render() {
     return [
-      this.headerComponent.update({ isLogin: true }),
+      this.headerComponent.update({}),
       this.pizzaComponent.update({}),
       this.footerComponent.update({})
     ];
@@ -1246,15 +1453,15 @@ class Login extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__["a" /* de
 /* harmony default export */ __webpack_exports__["a"] = (Login);
 
 /***/ }),
-/* 21 */
+/* 24 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_helper__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_config__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__framework_Component__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__ = __webpack_require__(22);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__services_PizzaDrawService__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__services_PizzaDrawService__ = __webpack_require__(8);
 
 
 
@@ -1272,7 +1479,7 @@ class PizzaComponent extends __WEBPACK_IMPORTED_MODULE_2__framework_Component__[
     this.host = document.createElement("div");
     this.host.classList.add("container");
 
-    Promise.all([__WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__["a" /* PIZZA_DATA_SERVICE */].getIngredients(), __WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__["a" /* PIZZA_DATA_SERVICE */].getTags()])
+    Promise.all([__WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__["a" /* PIZZA_DATA_SERVICE */]._getIngredients(), __WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__["a" /* PIZZA_DATA_SERVICE */]._getTags()])
       .then(data => {
         this.startCreation();
         __WEBPACK_IMPORTED_MODULE_4__services_PizzaDrawService__["a" /* PIZZA_DRAW_SERVICE */].init({
@@ -1378,164 +1585,231 @@ class PizzaComponent extends __WEBPACK_IMPORTED_MODULE_2__framework_Component__[
 /* harmony default export */ __webpack_exports__["a"] = (PizzaComponent);
 
 /***/ }),
-/* 22 */
+/* 25 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__AuthHttpService__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_helper__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__framework_Component__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__HeaderComponent__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ComposerFormComponent__ = __webpack_require__(26);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ComposerViewComponent__ = __webpack_require__(27);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__FooterComponent__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__services_PizzaDataService__ = __webpack_require__(6);
 
 
 
-class PizzaDataService {
-  constructor() {
-    this.ingredients = [];
-    this.tags = [];
+
+
+
+
+
+class PizzaComposer extends __WEBPACK_IMPORTED_MODULE_1__framework_Component__["a" /* default */] {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      isDataReady: false
+    };
+
+    this.headerComponent = new __WEBPACK_IMPORTED_MODULE_2__HeaderComponent__["a" /* default */]();
+    this.composerFormComponent = new __WEBPACK_IMPORTED_MODULE_3__ComposerFormComponent__["a" /* default */]();
+    this.composerViewComponent = new __WEBPACK_IMPORTED_MODULE_4__ComposerViewComponent__["a" /* default */]();
+    this.footerComponent = new __WEBPACK_IMPORTED_MODULE_5__FooterComponent__["a" /* default */]();
+
+    this.host = document.createElement("div");
+    this.host.classList.add("container");
   }
 
-  getIngredients() {
-    return __WEBPACK_IMPORTED_MODULE_1__AuthHttpService__["a" /* AUTH_HTTP_SERVICE */].get(`${__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].ENDPOINTS.INGREDIENT_LIST}`)
+  onInit() {
+    __WEBPACK_IMPORTED_MODULE_6__services_PizzaDataService__["a" /* PIZZA_DATA_SERVICE */].loadPizzaData()
       .then(data => {
-        this.ingredients = data.answer.results;
+        this.updateState({ isDataReady: true });
         return data;
       });
   }
 
-  getTags() {
-    return __WEBPACK_IMPORTED_MODULE_1__AuthHttpService__["a" /* AUTH_HTTP_SERVICE */].get(`${__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].ENDPOINTS.TAG_LIST}`)
-      .then(data => {
-        this.tags = data.answer.results;
-        return data;
-      });
+  render() {
+    const { isDataReady } = this.state;
+
+    const htmlString = `
+      <div id="header"></div>
+      <div class="pizza">
+        <h1>Create and order your pizza</h1>
+        <div class="pizza-container">
+          <section id="canvas-placeholder"></section>
+          <section id="data-placeholder"></section>
+        </div>
+      </div>
+      <div id="footer"></div>
+    `;
+
+    const node = Object(__WEBPACK_IMPORTED_MODULE_0__utils_helper__["e" /* toHtml */])(htmlString);
+    node.getElementById("header").append(this.headerComponent.update({}));
+    node.getElementById("data-placeholder").append(this.composerFormComponent.update({}));
+    node.getElementById("canvas-placeholder").append(this.composerViewComponent.update({ isDataReady }));
+    node.getElementById("footer").append(this.footerComponent.update({}));
+
+    return node;
   }
 }
 
-const PIZZA_DATA_SERVICE = new PizzaDataService();
-/* harmony export (immutable) */ __webpack_exports__["a"] = PIZZA_DATA_SERVICE;
-
+/* harmony default export */ __webpack_exports__["a"] = (PizzaComposer);
 
 /***/ }),
-/* 23 */
+/* 26 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Sprite__ = __webpack_require__(24);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__framework_Component__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__services_PizzaDataService__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__services_PizzaDrawService__ = __webpack_require__(8);
 
 
 
-class PizzaDrawSevice {
-  constructor() {
-    this.crust_pizza = `${__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].BASE_URL}${__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].CRUST_PIZZA}`;
+
+
+class ComposerFormComponent extends __WEBPACK_IMPORTED_MODULE_1__framework_Component__["a" /* default */] {
+  constructor(props) {
+    super(props);
+
+    this.host = document.createElement("div");
+    this.host.classList.add("container");
+
+    this.host.addEventListener("submit", this.handleSubmit);
   }
 
-  init(initData) {
-    this.host = initData.host;
+
+  handleSubmit(ev) {
+    ev.preventDefault();
+  }
+
+  render() {
+    return `
+      <form id="create">
+        <label for="name">Pizza and order name: </label>
+        <input 
+          type="text" 
+          name="name" 
+          min-length="3" 
+          max-length="24"
+          placeholder="Pizza and order name" 
+          value="" 
+          required>
+        <label for="size">
+          Pizza size: 
+          <label>
+            30
+            <input 
+              type="radio" 
+              name="size" 
+              value="30">
+          </label>
+          <label>
+            45
+            <input 
+              type="radio" 
+              name="size" 
+              value="45">
+          </label>
+          <label>
+            60
+            <input 
+              type="radio" 
+              name="size" 
+              value="60">
+          </label>
+        </label>
+        <label>Ingredients: </label>
+        <div class="check-holder">
+          ${__WEBPACK_IMPORTED_MODULE_2__services_PizzaDataService__["a" /* PIZZA_DATA_SERVICE */].ingredients.reduce((html, ingr) => {
+            html += `
+              <label title="${ingr.name}"> 
+                <img src="${__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].BASE_URL}${ingr.image_url}" alt="${ingr.name}">
+                <input type="checkbox" name="${ingr.name}">
+              </label>
+            `;
+            return html;
+          }, "")}
+        </div>
+        <div class="check-holder">
+          ${__WEBPACK_IMPORTED_MODULE_2__services_PizzaDataService__["a" /* PIZZA_DATA_SERVICE */].tags.reduce((html, tag) => {
+            html += `
+              <label title="${tag.name}"> 
+                ${tag.name}
+                <input type="checkbox" name="${tag.name}">
+              </label>
+            `;
+            return html;
+          }, "")}
+        </div>
+      </form>
+    `;
+  }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (ComposerFormComponent);
+
+/***/ }),
+/* 27 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_Sprite__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__framework_Component__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__services_PizzaDrawService__ = __webpack_require__(8);
+
+
+
+
+
+
+class ComposerViewComponent extends __WEBPACK_IMPORTED_MODULE_2__framework_Component__["a" /* default */] {
+  constructor(props) {
+    super(props);
+
+    this.host = document.createElement("div");
+    this.host.classList.add("container");
+
     this.canvas = document.createElement("canvas");
     this.ctx = this.canvas.getContext("2d");
     this.canvasWidth = 320;
     this.canvasHeight = 320;
-    this.ingredients = initData.ingredients;
-    this.images = {};
 
     this.canvas.width = this.canvasWidth;
     this.canvas.height = this.canvasHeight;
-
-    this.sprites = {};
-    this.spritesPool = [];
-
-    this._loadResources().then((resources) => {
-      resources.forEach(resource => {
-        this.images[resource.name] = resource.image;
-      });
-      this.host.append(this.canvas);
-      let pizza = new __WEBPACK_IMPORTED_MODULE_1__Sprite__["a" /* default */](this.images["pizza"], 160, 160, 300, 300);
-
-      this.sprites["pizza"] = pizza;
-      this.spritesPool.push(pizza);
-      this._draw();
-
-      setInterval(() => {
-        const corn = new __WEBPACK_IMPORTED_MODULE_1__Sprite__["a" /* default */](this.images["corn"], random(80,240), random(80,240), 25, 25);
-        this.spritesPool.push(corn);
-        this._draw();
-      }, 2000);
-    });
   }
-  
-  _draw() {
+
+  _clear() {
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-    this.spritesPool.forEach(sprite => sprite.draw(this.ctx));
   }
 
-  _loadResources() {
-    let promises = [];
-    promises.push(this._loadImage("pizza", this.crust_pizza));
-    promises = promises.concat(this.ingredients.map(ingredient => {
-      const ingrUrl = `${__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].BASE_URL}${ingredient.image_url}`;
-      return this._loadImage(ingredient.name, ingrUrl);
-    }));
-    return Promise.all(promises);
+  _draw(spritesPool) {
+    spritesPool.forEach(sprite => sprite.draw(this.ctx));
   }
 
-  _loadImage(name, url) {
-    return new Promise((resolve, reject) => {
-      const image = new Image();
-      image.onload = () => resolve({ name, image });
-      image.onerror = (e) => reject(e);
-      image.src = url;
-    });
-  }
-}
+  render() {
+    const { isDataReady } = this.props;
+    const sprites = {};
+    const spritesPool = [];
 
-function random(min, max) {
-  return Math.floor(min + Math.random() * (max - min + 1));
-}
+    if (isDataReady) {
+      let pizza = new __WEBPACK_IMPORTED_MODULE_1__services_Sprite__["a" /* default */](__WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__["a" /* PIZZA_DATA_SERVICE */].images["pizza"], 160, 160, 300, 300);
+      sprites["pizza"] = pizza;
+      spritesPool.push(pizza);
 
-const PIZZA_DRAW_SERVICE = new PizzaDrawSevice();
-/* harmony export (immutable) */ __webpack_exports__["a"] = PIZZA_DRAW_SERVICE;
+      this._clear();
+      this._draw(spritesPool);
+    }
 
-
-/***/ }),
-/* 24 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-class Sprite {
-  // cx, cy - center of the sprite
-  constructor(image, cx, cy, width, height) {
-    // order matters
-    this.image = image;
-    this.x = 0;
-    this.y = 0;
-    this.width = width || this.image.width;
-    this.height = height  || this.image.height;
-    this.cx = cx || 0;
-    this.cy = cy || 0;
-  }
-
-  get cx() {
-    return Math.round(this.x + this.width * 0.5);
-  }
-
-  get cy() {
-    return Math.round(this.y + this.height * 0.5);
-  }
-
-  set cx(value) {
-    this.x = Math.round(value - this.width * 0.5);
-  }
-
-  set cy(value) {
-    this.y = Math.round(value - this.height * 0.5);
-  }
-
-  draw(ctx) {
-    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+    return this.canvas;
   }
 }
 
-/* harmony default export */ __webpack_exports__["a"] = (Sprite);
+/* harmony default export */ __webpack_exports__["a"] = (ComposerViewComponent);
 
 /***/ })
 /******/ ]);

@@ -1,33 +1,25 @@
-import { toHtml } from "../utils/helper";
 import { API } from "../utils/config";
 import Component from "../framework/Component";
 import { PIZZA_DATA_SERVICE } from "../services/PizzaDataService";
 import { PIZZA_DRAW_SERVICE } from "../services/PizzaDrawService";
 
-class PizzaComponent extends Component {
+class ComposerFormComponent extends Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      dataNode: null
-    };
 
     this.host = document.createElement("div");
     this.host.classList.add("container");
 
-    Promise.all([PIZZA_DATA_SERVICE._getIngredients(), PIZZA_DATA_SERVICE._getTags()])
-      .then(data => {
-        this.startCreation();
-        PIZZA_DRAW_SERVICE.init({
-          host: document.getElementById("canvas-placeholder"),
-          ingredients: PIZZA_DATA_SERVICE.ingredients
-        });
-        return data;
-      });
+    this.host.addEventListener("submit", this.handleSubmit);
   }
 
-  startCreation() {
-    const htmlString = `
+
+  handleSubmit(ev) {
+    ev.preventDefault();
+  }
+
+  render() {
+    return `
       <form id="create">
         <label for="name">Pizza and order name: </label>
         <input 
@@ -87,35 +79,7 @@ class PizzaComponent extends Component {
         </div>
       </form>
     `;
-
-    const node = toHtml(htmlString);
-    this.updateState({ dataNode: node});
-    // add event listeners
-    document.getElementById("create").addEventListener("change", ev => {
-      console.log(ev);
-    });
-  }
-
-  render() {
-    const { dataNode } = this.state;
-
-    const htmlString = `
-      <div class="pizza">
-        <h1>Create and order your pizza</h1>
-        <div class="pizza-container">
-          <section id="canvas-placeholder"></section>
-          <section id="data-placeholder"></section>
-        </div>
-      </div>
-    `;
-
-    const node = toHtml(htmlString);
-    if (dataNode) {
-      node.getElementById("data-placeholder").append(dataNode);
-    }
-
-    return node;
   }
 }
 
-export default PizzaComponent;
+export default ComposerFormComponent;

@@ -4,6 +4,7 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import MyInfo from "./components/MyInfo";
 import Pizza from "./components/Pizza";
+import PizzaComposer from "./components/PizzaComposer";
 
 const routes = [
   {
@@ -31,6 +32,11 @@ const routes = [
   {
     href: "/pizza",
     component: Pizza,
+    authorized: AUTH_SERVICE.isAuthorized
+  },
+  {
+    href: "/create-pizza",
+    component: PizzaComposer,
     authorized: AUTH_SERVICE.isAuthorized
   },
   {

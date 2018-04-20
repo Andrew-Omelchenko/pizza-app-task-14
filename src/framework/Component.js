@@ -7,6 +7,8 @@ class Component {
     this.host = null;
 
     bindAll(this, "updateState", "update");
+
+    this.onInit();
   }
 
   _render() {
@@ -25,10 +27,12 @@ class Component {
     return this.host;
   }
 
-  componentReveivedProps(nextProps) {}
+  onReceiveProps(nextProps) {}
+
+  onInit() {}
 
   update(nextProps) {
-    this.componentReveivedProps(nextProps);
+    this.onReceiveProps(nextProps);
     this.props = nextProps;
     return this._render();
   }
