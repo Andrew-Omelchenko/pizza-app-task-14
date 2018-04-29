@@ -1,4 +1,4 @@
-import { toHtml } from "../utils/helper";
+import { bindAll, toHtml } from "../utils/helper";
 import Component from "../framework/Component";
 import HeaderComponent from "./HeaderComponent";
 import ComposerFormComponent from "./ComposerFormComponent";
@@ -15,20 +15,39 @@ class PizzaComposer extends Component {
     };
 
     this.headerComponent = new HeaderComponent();
-    this.composerFormComponent = new ComposerFormComponent();
-    this.composerViewComponent = new ComposerViewComponent();
+    this.composerFormComponent = new ComposerFormComponent({
+      onDataChange: this.onDataChange
+    });
+    this.composerViewComponent = new ComposerViewComponent({ 
+      isDataReady: this.state.isDataReady,
+      ingredients: [],
+      size: 60
+    });
     this.footerComponent = new FooterComponent();
 
     this.host = document.createElement("div");
     this.host.classList.add("container");
+
+    bindAll(this, "onDataChange");
+
+    this._onInit();
   }
 
-  onInit() {
+  _onInit() {
     PIZZA_DATA_SERVICE.loadPizzaData()
       .then(data => {
         this.updateState({ isDataReady: true });
         return data;
       });
+  }
+
+  onDataChange(ingredients, size) {
+    console.log(ingredients, size);
+    this.composerViewComponent.update({
+      isDataReady: this.state.isDataReady,
+      ingredients,
+      size
+    });
   }
 
   render() {
@@ -48,8 +67,14 @@ class PizzaComposer extends Component {
 
     const node = toHtml(htmlString);
     node.getElementById("header").append(this.headerComponent.update({}));
-    node.getElementById("data-placeholder").append(this.composerFormComponent.update({}));
-    node.getElementById("canvas-placeholder").append(this.composerViewComponent.update({ isDataReady }));
+    node.getElementById("data-placeholder").append(this.composerFormComponent.update({
+      onDataChange: this.onDataChange
+    }));
+    node.getElementById("canvas-placeholder").append(this.composerViewComponent.update({
+      isDataReady,
+      ingredients: [],
+      size: 60
+    }));
     node.getElementById("footer").append(this.footerComponent.update({}));
 
     return node;

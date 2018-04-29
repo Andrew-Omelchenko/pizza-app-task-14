@@ -1,4 +1,5 @@
 import { API } from "../utils/config";
+import { bindAll, toHtml } from "../utils/helper";
 import Component from "../framework/Component";
 import { PIZZA_DATA_SERVICE } from "../services/PizzaDataService";
 import { PIZZA_DRAW_SERVICE } from "../services/PizzaDrawService";
@@ -6,20 +7,41 @@ import { PIZZA_DRAW_SERVICE } from "../services/PizzaDrawService";
 class ComposerFormComponent extends Component {
   constructor(props) {
     super(props);
+    console.log(this.props);
 
     this.host = document.createElement("div");
     this.host.classList.add("container");
 
+    bindAll(this, "handleChange", "handleSubmit");
+
+    this.host.addEventListener("change", this.handleChange);
     this.host.addEventListener("submit", this.handleSubmit);
   }
 
+
+  handleChange(ev) {
+    let size = 60;
+    const ingredients = [];
+
+    for (let sizeElement of this.sizesCollection) {
+      if (sizeElement.checked) {
+        size = Number(sizeElement.value);
+        break;
+      }
+    }
+    for (let ingredientElement of this.ingredientsCollection) {
+      if (ingredientElement.checked) ingredients.push(ingredientElement.name);
+    }
+    
+    this.props.onDataChange(ingredients, size);
+  }
 
   handleSubmit(ev) {
     ev.preventDefault();
   }
 
   render() {
-    return `
+    const htmlString = `
       <form id="create">
         <label for="name">Pizza and order name: </label>
         <input 
@@ -35,6 +57,7 @@ class ComposerFormComponent extends Component {
           <label>
             30
             <input 
+              class="size" 
               type="radio" 
               name="size" 
               value="30">
@@ -42,6 +65,7 @@ class ComposerFormComponent extends Component {
           <label>
             45
             <input 
+              class="size" 
               type="radio" 
               name="size" 
               value="45">
@@ -49,9 +73,11 @@ class ComposerFormComponent extends Component {
           <label>
             60
             <input 
+              class="size" 
               type="radio" 
               name="size" 
-              value="60">
+              value="60"
+              checked>
           </label>
         </label>
         <label>Ingredients: </label>
@@ -60,7 +86,7 @@ class ComposerFormComponent extends Component {
             html += `
               <label title="${ingr.name}"> 
                 <img src="${API.BASE_URL}${ingr.image_url}" alt="${ingr.name}">
-                <input type="checkbox" name="${ingr.name}">
+                <input class="ingredient" type="checkbox" name="${ingr.name}" value="${ingr.id}">
               </label>
             `;
             return html;
@@ -79,6 +105,13 @@ class ComposerFormComponent extends Component {
         </div>
       </form>
     `;
+
+    const node = toHtml(htmlString);
+    const nodeElement = node.getElementById("create");
+    this.sizesCollection = nodeElement.getElementsByClassName("size");
+    this.ingredientsCollection = nodeElement.getElementsByClassName("ingredient");
+
+    return node;
   }
 }
 

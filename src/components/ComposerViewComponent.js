@@ -29,12 +29,19 @@ class ComposerViewComponent extends Component {
   }
 
   render() {
-    const { isDataReady } = this.props;
+    const { isDataReady, ingredients, size } = this.props;
+
     const sprites = {};
     const spritesPool = [];
 
     if (isDataReady) {
-      let pizza = new Sprite(PIZZA_DATA_SERVICE.images["pizza"], 160, 160, 300, 300);
+      let pizza = new Sprite(
+        PIZZA_DATA_SERVICE.images["pizza"], 
+        this.canvasWidth / 2, 
+        this.canvasHeight / 2, 
+        size + 240, 
+        size + 240
+      );
       sprites["pizza"] = pizza;
       spritesPool.push(pizza);
 

@@ -78,8 +78,6 @@ class Component {
     this.host = null;
 
     Object(__WEBPACK_IMPORTED_MODULE_0__utils_helper__["a" /* bindAll */])(this, "updateState", "update");
-
-    this.onInit();
   }
 
   _render() {
@@ -99,8 +97,6 @@ class Component {
   }
 
   onReceiveProps(nextProps) {}
-
-  onInit() {}
 
   update(nextProps) {
     this.onReceiveProps(nextProps);
@@ -1613,20 +1609,39 @@ class PizzaComposer extends __WEBPACK_IMPORTED_MODULE_1__framework_Component__["
     };
 
     this.headerComponent = new __WEBPACK_IMPORTED_MODULE_2__HeaderComponent__["a" /* default */]();
-    this.composerFormComponent = new __WEBPACK_IMPORTED_MODULE_3__ComposerFormComponent__["a" /* default */]();
-    this.composerViewComponent = new __WEBPACK_IMPORTED_MODULE_4__ComposerViewComponent__["a" /* default */]();
+    this.composerFormComponent = new __WEBPACK_IMPORTED_MODULE_3__ComposerFormComponent__["a" /* default */]({
+      onDataChange: this.onDataChange
+    });
+    this.composerViewComponent = new __WEBPACK_IMPORTED_MODULE_4__ComposerViewComponent__["a" /* default */]({ 
+      isDataReady: this.state.isDataReady,
+      ingredients: [],
+      size: 60
+    });
     this.footerComponent = new __WEBPACK_IMPORTED_MODULE_5__FooterComponent__["a" /* default */]();
 
     this.host = document.createElement("div");
     this.host.classList.add("container");
+
+    Object(__WEBPACK_IMPORTED_MODULE_0__utils_helper__["a" /* bindAll */])(this, "onDataChange");
+
+    this._onInit();
   }
 
-  onInit() {
+  _onInit() {
     __WEBPACK_IMPORTED_MODULE_6__services_PizzaDataService__["a" /* PIZZA_DATA_SERVICE */].loadPizzaData()
       .then(data => {
         this.updateState({ isDataReady: true });
         return data;
       });
+  }
+
+  onDataChange(ingredients, size) {
+    console.log(ingredients, size);
+    this.composerViewComponent.update({
+      isDataReady: this.state.isDataReady,
+      ingredients,
+      size
+    });
   }
 
   render() {
@@ -1646,8 +1661,14 @@ class PizzaComposer extends __WEBPACK_IMPORTED_MODULE_1__framework_Component__["
 
     const node = Object(__WEBPACK_IMPORTED_MODULE_0__utils_helper__["e" /* toHtml */])(htmlString);
     node.getElementById("header").append(this.headerComponent.update({}));
-    node.getElementById("data-placeholder").append(this.composerFormComponent.update({}));
-    node.getElementById("canvas-placeholder").append(this.composerViewComponent.update({ isDataReady }));
+    node.getElementById("data-placeholder").append(this.composerFormComponent.update({
+      onDataChange: this.onDataChange
+    }));
+    node.getElementById("canvas-placeholder").append(this.composerViewComponent.update({
+      isDataReady,
+      ingredients: [],
+      size: 60
+    }));
     node.getElementById("footer").append(this.footerComponent.update({}));
 
     return node;
@@ -1662,31 +1683,54 @@ class PizzaComposer extends __WEBPACK_IMPORTED_MODULE_1__framework_Component__["
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__framework_Component__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__services_PizzaDataService__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__services_PizzaDrawService__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_helper__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__framework_Component__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__services_PizzaDrawService__ = __webpack_require__(8);
 
 
 
 
 
-class ComposerFormComponent extends __WEBPACK_IMPORTED_MODULE_1__framework_Component__["a" /* default */] {
+
+class ComposerFormComponent extends __WEBPACK_IMPORTED_MODULE_2__framework_Component__["a" /* default */] {
   constructor(props) {
     super(props);
+    console.log(this.props);
 
     this.host = document.createElement("div");
     this.host.classList.add("container");
 
+    Object(__WEBPACK_IMPORTED_MODULE_1__utils_helper__["a" /* bindAll */])(this, "handleChange", "handleSubmit");
+
+    this.host.addEventListener("change", this.handleChange);
     this.host.addEventListener("submit", this.handleSubmit);
   }
 
+
+  handleChange(ev) {
+    let size = 60;
+    const ingredients = [];
+
+    for (let sizeElement of this.sizesCollection) {
+      if (sizeElement.checked) {
+        size = Number(sizeElement.value);
+        break;
+      }
+    }
+    for (let ingredientElement of this.ingredientsCollection) {
+      if (ingredientElement.checked) ingredients.push(ingredientElement.name);
+    }
+    
+    this.props.onDataChange(ingredients, size);
+  }
 
   handleSubmit(ev) {
     ev.preventDefault();
   }
 
   render() {
-    return `
+    const htmlString = `
       <form id="create">
         <label for="name">Pizza and order name: </label>
         <input 
@@ -1702,6 +1746,7 @@ class ComposerFormComponent extends __WEBPACK_IMPORTED_MODULE_1__framework_Compo
           <label>
             30
             <input 
+              class="size" 
               type="radio" 
               name="size" 
               value="30">
@@ -1709,6 +1754,7 @@ class ComposerFormComponent extends __WEBPACK_IMPORTED_MODULE_1__framework_Compo
           <label>
             45
             <input 
+              class="size" 
               type="radio" 
               name="size" 
               value="45">
@@ -1716,25 +1762,27 @@ class ComposerFormComponent extends __WEBPACK_IMPORTED_MODULE_1__framework_Compo
           <label>
             60
             <input 
+              class="size" 
               type="radio" 
               name="size" 
-              value="60">
+              value="60"
+              checked>
           </label>
         </label>
         <label>Ingredients: </label>
         <div class="check-holder">
-          ${__WEBPACK_IMPORTED_MODULE_2__services_PizzaDataService__["a" /* PIZZA_DATA_SERVICE */].ingredients.reduce((html, ingr) => {
+          ${__WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__["a" /* PIZZA_DATA_SERVICE */].ingredients.reduce((html, ingr) => {
             html += `
               <label title="${ingr.name}"> 
                 <img src="${__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].BASE_URL}${ingr.image_url}" alt="${ingr.name}">
-                <input type="checkbox" name="${ingr.name}">
+                <input class="ingredient" type="checkbox" name="${ingr.name}" value="${ingr.id}">
               </label>
             `;
             return html;
           }, "")}
         </div>
         <div class="check-holder">
-          ${__WEBPACK_IMPORTED_MODULE_2__services_PizzaDataService__["a" /* PIZZA_DATA_SERVICE */].tags.reduce((html, tag) => {
+          ${__WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__["a" /* PIZZA_DATA_SERVICE */].tags.reduce((html, tag) => {
             html += `
               <label title="${tag.name}"> 
                 ${tag.name}
@@ -1746,6 +1794,13 @@ class ComposerFormComponent extends __WEBPACK_IMPORTED_MODULE_1__framework_Compo
         </div>
       </form>
     `;
+
+    const node = Object(__WEBPACK_IMPORTED_MODULE_1__utils_helper__["e" /* toHtml */])(htmlString);
+    const nodeElement = node.getElementById("create");
+    this.sizesCollection = nodeElement.getElementsByClassName("size");
+    this.ingredientsCollection = nodeElement.getElementsByClassName("ingredient");
+
+    return node;
   }
 }
 
@@ -1792,12 +1847,19 @@ class ComposerViewComponent extends __WEBPACK_IMPORTED_MODULE_2__framework_Compo
   }
 
   render() {
-    const { isDataReady } = this.props;
+    const { isDataReady, ingredients, size } = this.props;
+
     const sprites = {};
     const spritesPool = [];
 
     if (isDataReady) {
-      let pizza = new __WEBPACK_IMPORTED_MODULE_1__services_Sprite__["a" /* default */](__WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__["a" /* PIZZA_DATA_SERVICE */].images["pizza"], 160, 160, 300, 300);
+      let pizza = new __WEBPACK_IMPORTED_MODULE_1__services_Sprite__["a" /* default */](
+        __WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__["a" /* PIZZA_DATA_SERVICE */].images["pizza"], 
+        this.canvasWidth / 2, 
+        this.canvasHeight / 2, 
+        size + 240, 
+        size + 240
+      );
       sprites["pizza"] = pizza;
       spritesPool.push(pizza);
 

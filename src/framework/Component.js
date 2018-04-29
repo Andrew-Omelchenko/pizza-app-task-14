@@ -7,8 +7,6 @@ class Component {
     this.host = null;
 
     bindAll(this, "updateState", "update");
-
-    this.onInit();
   }
 
   _render() {
@@ -28,8 +26,6 @@ class Component {
   }
 
   onReceiveProps(nextProps) {}
-
-  onInit() {}
 
   update(nextProps) {
     this.onReceiveProps(nextProps);
