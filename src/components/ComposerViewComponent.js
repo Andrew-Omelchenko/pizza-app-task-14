@@ -45,12 +45,26 @@ class ComposerViewComponent extends Component {
       sprites["pizza"] = pizza;
       spritesPool.push(pizza);
 
+      ingredients.forEach(ingredient => {
+        console.log(ingredient);
+        for (let i = 0; i < 6; i++) {
+          const ingrSprite = new Sprite(
+            PIZZA_DATA_SERVICE.images[ingredient], random(80,240), random(80,240), 30, 30
+          );
+          spritesPool.push(ingrSprite);
+        }
+      });
+
       this._clear();
       this._draw(spritesPool);
     }
 
     return this.canvas;
   }
+}
+
+function random(min, max) {
+  return Math.floor(min + Math.random() * (max - min + 1));
 }
 
 export default ComposerViewComponent;

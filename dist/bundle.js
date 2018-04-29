@@ -1863,12 +1863,26 @@ class ComposerViewComponent extends __WEBPACK_IMPORTED_MODULE_2__framework_Compo
       sprites["pizza"] = pizza;
       spritesPool.push(pizza);
 
+      ingredients.forEach(ingredient => {
+        console.log(ingredient);
+        for (let i = 0; i < 6; i++) {
+          const ingrSprite = new __WEBPACK_IMPORTED_MODULE_1__services_Sprite__["a" /* default */](
+            __WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__["a" /* PIZZA_DATA_SERVICE */].images[ingredient], random(80,240), random(80,240), 30, 30
+          );
+          spritesPool.push(ingrSprite);
+        }
+      });
+
       this._clear();
       this._draw(spritesPool);
     }
 
     return this.canvas;
   }
+}
+
+function random(min, max) {
+  return Math.floor(min + Math.random() * (max - min + 1));
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (ComposerViewComponent);
