@@ -2,7 +2,6 @@ import { API } from "../utils/config";
 import Sprite from "../services/Sprite";
 import Component from "../framework/Component";
 import { PIZZA_DATA_SERVICE } from "../services/PizzaDataService";
-import { PIZZA_DRAW_SERVICE } from "../services/PizzaDrawService";
 
 class ComposerViewComponent extends Component {
   constructor(props) {
