@@ -1418,9 +1418,10 @@ class ComposerFormComponent extends __WEBPACK_IMPORTED_MODULE_2__framework_Compo
     this.host = document.createElement("div");
     this.host.classList.add("container");
 
-    Object(__WEBPACK_IMPORTED_MODULE_1__utils_helper__["a" /* bindAll */])(this, "handleChange", "handleSubmit");
+    Object(__WEBPACK_IMPORTED_MODULE_1__utils_helper__["a" /* bindAll */])(this, "handleChange", "handleClick", "handleSubmit");
 
     this.host.addEventListener("change", this.handleChange);
+    this.host.addEventListener("click", this.handleClick);
     this.host.addEventListener("submit", this.handleSubmit);
   }
 
@@ -1452,6 +1453,12 @@ class ComposerFormComponent extends __WEBPACK_IMPORTED_MODULE_2__framework_Compo
     });
 
     this.props.onDataChange(this.ingredients, this.size);
+  }
+
+  handleClick(ev) {
+    if (ev.target.id === "cancel-btn") {
+      window.location.hash = "/";
+    }
   }
 
   handleSubmit(ev) {
@@ -1522,6 +1529,10 @@ class ComposerFormComponent extends __WEBPACK_IMPORTED_MODULE_2__framework_Compo
           }, "")}
         </div>
         <div id="price-placeholder"></div>
+        <div class="btn-placeholder">
+          <button class="btn" type="button" id="cancel-btn">Cancel</button>
+          <button class="btn" type="submit" id="order-btn">Order</button>
+        </div>
       </form>
     `;
 
@@ -1644,7 +1655,11 @@ class ComposerViewComponent extends __WEBPACK_IMPORTED_MODULE_2__framework_Compo
       ingredients.forEach(ingredient => {
         for (let i = 0; i < 12; i++) {
           const ingrSprite = new __WEBPACK_IMPORTED_MODULE_1__services_Sprite__["a" /* default */](
-            __WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__["a" /* PIZZA_DATA_SERVICE */].images[ingredient], random(80,240), random(80,240), 30, 30
+            __WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__["a" /* PIZZA_DATA_SERVICE */].images[ingredient], 
+            random(80,240), 
+            random(80,240), 
+            30, 
+            30
           );
           spritesPool.push(ingrSprite);
         }

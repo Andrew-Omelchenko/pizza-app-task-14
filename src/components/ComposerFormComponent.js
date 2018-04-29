@@ -21,9 +21,10 @@ class ComposerFormComponent extends Component {
     this.host = document.createElement("div");
     this.host.classList.add("container");
 
-    bindAll(this, "handleChange", "handleSubmit");
+    bindAll(this, "handleChange", "handleClick", "handleSubmit");
 
     this.host.addEventListener("change", this.handleChange);
+    this.host.addEventListener("click", this.handleClick);
     this.host.addEventListener("submit", this.handleSubmit);
   }
 
@@ -55,6 +56,12 @@ class ComposerFormComponent extends Component {
     });
 
     this.props.onDataChange(this.ingredients, this.size);
+  }
+
+  handleClick(ev) {
+    if (ev.target.id === "cancel-btn") {
+      window.location.hash = "/";
+    }
   }
 
   handleSubmit(ev) {
@@ -125,6 +132,10 @@ class ComposerFormComponent extends Component {
           }, "")}
         </div>
         <div id="price-placeholder"></div>
+        <div class="btn-placeholder">
+          <button class="btn" type="button" id="cancel-btn">Cancel</button>
+          <button class="btn" type="submit" id="order-btn">Order</button>
+        </div>
       </form>
     `;
 

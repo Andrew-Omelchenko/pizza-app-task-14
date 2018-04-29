@@ -263,10 +263,10 @@ strong {
   font-family: "Roboto", sans-serif;
   font-size: 12pt;
   font-weight: bold;
-  height: 42px;
   border: 1px solid gray;
   border-radius: 5px;
   margin: 10px;
+  padding: 20px;
   color: white;
   background: brown;
   cursor: pointer; }
@@ -354,3 +354,6 @@ strong {
         display: inline-block; }
     .pizza .pizza-container section .check-holder > label {
       display: inline-block; }
+
+.btn-placeholder {
+  float: right; }
