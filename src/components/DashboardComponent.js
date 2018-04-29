@@ -6,6 +6,13 @@ class DashboardComponent extends Component {
 
     this.host = document.createElement("div");
     this.host.classList.add("dashboard-container");
+    this.host.addEventListener("click", this.handleClick);
+  }
+
+  handleClick(ev) {
+    if (ev.target.id === "add-new-pizza-btn") {
+      window.location.hash = "/create-pizza";
+    }
   }
 
   render() {
@@ -34,7 +41,7 @@ class DashboardComponent extends Component {
 
     return `
       <div class="flex-container center">
-        <button class="btn btn-ordinary" type="button">
+        <button class="btn btn-ordinary" type="button" id="add-new-pizza-btn">
           <i class="fa fa-plus fa-fw label" aria-hidden="true"></i>
           ADD NEW PIZZA
         </button>

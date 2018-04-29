@@ -406,58 +406,7 @@ const AUTH_SERVICE = new AuthService();
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_helper__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__AuthService__ = __webpack_require__(5);
-
-
-
-
-class AuthHttpService {
-  get(endpoint) {
-    const headers = new Headers({ "Content-Type": "application/json" });
-    
-    if (__WEBPACK_IMPORTED_MODULE_2__AuthService__["a" /* AUTH_SERVICE */].isAuthorized()) {
-      headers.append("Authorization", `Bearer ${__WEBPACK_IMPORTED_MODULE_2__AuthService__["a" /* AUTH_SERVICE */].token}`);
-    }
-
-    return fetch(`${__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].BASE_URL}${endpoint}`, { headers })
-      .then(__WEBPACK_IMPORTED_MODULE_1__utils_helper__["d" /* processResponse */]);
-  }
-
-  post(endpoint, payload) {
-    return fetch(`${__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].BASE_URL}${endpoint}`, {
-      method: 'POST',
-      body: JSON.stringify(payload),
-      headers: new Headers({ "content-type": "application/json" }),
-    })
-      .then(__WEBPACK_IMPORTED_MODULE_1__utils_helper__["d" /* processResponse */]);
-  }
-  
-  getStores() {
-    return this.get(__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].ENDPOINTS.STORE_LIST);
-  }
-  
-  createUser(userData) {
-    return this.post(__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].ENDPOINTS.CREATE_USER, userData);
-  }
-
-  getMyInfo() {
-    return this.get(__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].ENDPOINTS.MY_INFO);
-  }
-}
-
-const AUTH_HTTP_SERVICE = new AuthHttpService();
-/* harmony export (immutable) */ __webpack_exports__["a"] = AUTH_HTTP_SERVICE;
-
-
-
-/***/ }),
-/* 7 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__AuthHttpService__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__AuthHttpService__ = __webpack_require__(7);
 
 
 
@@ -522,6 +471,57 @@ class PizzaDataService {
 
 const PIZZA_DATA_SERVICE = new PizzaDataService();
 /* harmony export (immutable) */ __webpack_exports__["a"] = PIZZA_DATA_SERVICE;
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_helper__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__AuthService__ = __webpack_require__(5);
+
+
+
+
+class AuthHttpService {
+  get(endpoint) {
+    const headers = new Headers({ "Content-Type": "application/json" });
+    
+    if (__WEBPACK_IMPORTED_MODULE_2__AuthService__["a" /* AUTH_SERVICE */].isAuthorized()) {
+      headers.append("Authorization", `Bearer ${__WEBPACK_IMPORTED_MODULE_2__AuthService__["a" /* AUTH_SERVICE */].token}`);
+    }
+
+    return fetch(`${__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].BASE_URL}${endpoint}`, { headers })
+      .then(__WEBPACK_IMPORTED_MODULE_1__utils_helper__["d" /* processResponse */]);
+  }
+
+  post(endpoint, payload) {
+    return fetch(`${__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].BASE_URL}${endpoint}`, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+      headers: new Headers({ "content-type": "application/json" }),
+    })
+      .then(__WEBPACK_IMPORTED_MODULE_1__utils_helper__["d" /* processResponse */]);
+  }
+  
+  getStores() {
+    return this.get(__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].ENDPOINTS.STORE_LIST);
+  }
+  
+  createUser(userData) {
+    return this.post(__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].ENDPOINTS.CREATE_USER, userData);
+  }
+
+  getMyInfo() {
+    return this.get(__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].ENDPOINTS.MY_INFO);
+  }
+}
+
+const AUTH_HTTP_SERVICE = new AuthHttpService();
+/* harmony export (immutable) */ __webpack_exports__["a"] = AUTH_HTTP_SERVICE;
+
 
 
 /***/ }),
@@ -848,6 +848,13 @@ class DashboardComponent extends __WEBPACK_IMPORTED_MODULE_0__framework_Componen
 
     this.host = document.createElement("div");
     this.host.classList.add("dashboard-container");
+    this.host.addEventListener("click", this.handleClick);
+  }
+
+  handleClick(ev) {
+    if (ev.target.id === "add-new-pizza-btn") {
+      window.location.hash = "/create-pizza";
+    }
   }
 
   render() {
@@ -876,7 +883,7 @@ class DashboardComponent extends __WEBPACK_IMPORTED_MODULE_0__framework_Componen
 
     return `
       <div class="flex-container center">
-        <button class="btn btn-ordinary" type="button">
+        <button class="btn btn-ordinary" type="button" id="add-new-pizza-btn">
           <i class="fa fa-plus fa-fw label" aria-hidden="true"></i>
           ADD NEW PIZZA
         </button>
@@ -1056,7 +1063,7 @@ class Register extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__["a" /*
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Component__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_AuthHttpService__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_AuthHttpService__ = __webpack_require__(7);
 
 
 
@@ -1232,7 +1239,7 @@ class MyInfo extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__["a" /* d
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Component__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_AuthHttpService__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_AuthHttpService__ = __webpack_require__(7);
 
 
 
@@ -1290,9 +1297,9 @@ class MyInfoComponent extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__framework_Component__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__HeaderComponent__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ComposerFormComponent__ = __webpack_require__(22);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ComposerViewComponent__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ComposerViewComponent__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__FooterComponent__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__services_PizzaDataService__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__services_PizzaDataService__ = __webpack_require__(6);
 
 
 
@@ -1386,7 +1393,9 @@ class PizzaComposer extends __WEBPACK_IMPORTED_MODULE_1__framework_Component__["
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_helper__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__framework_Component__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__PriceComponent__ = __webpack_require__(23);
+
 
 
 
@@ -1396,6 +1405,15 @@ class ComposerFormComponent extends __WEBPACK_IMPORTED_MODULE_2__framework_Compo
   constructor(props) {
     super(props);
     console.log(this.props);
+
+    this.size = 60;
+    this.ingredients = [];
+    this.tags = [];
+
+    this.priceComponent = new __WEBPACK_IMPORTED_MODULE_4__PriceComponent__["a" /* default */]({
+      size: this.size,
+      ingredients: this.ingredients
+    });
 
     this.host = document.createElement("div");
     this.host.classList.add("container");
@@ -1408,20 +1426,32 @@ class ComposerFormComponent extends __WEBPACK_IMPORTED_MODULE_2__framework_Compo
 
 
   handleChange(ev) {
-    let size = 60;
-    const ingredients = [];
+    if (ev.target.type !== "radio" && ev.target.type !== "checkbox") return;
+
+    this.ingredients = [];
+    this.tags = [];
 
     for (let sizeElement of this.sizesCollection) {
       if (sizeElement.checked) {
-        size = Number(sizeElement.value);
+        this.size = Number(sizeElement.value);
         break;
       }
     }
+
     for (let ingredientElement of this.ingredientsCollection) {
-      if (ingredientElement.checked) ingredients.push(ingredientElement.name);
+      if (ingredientElement.checked) this.ingredients.push(ingredientElement.name);
     }
-    
-    this.props.onDataChange(ingredients, size);
+
+    for (let tagElement of this.tagsCollection) {
+      if (tagElement.checked) this.tags.push(tagElement.name);
+    }
+
+    this.priceComponent.update({
+      size: this.size,
+      ingredients: this.ingredients
+    });
+
+    this.props.onDataChange(this.ingredients, this.size);
   }
 
   handleSubmit(ev) {
@@ -1485,12 +1515,13 @@ class ComposerFormComponent extends __WEBPACK_IMPORTED_MODULE_2__framework_Compo
             html += `
               <label title="${tag.name}"> 
                 ${tag.name}
-                <input type="checkbox" name="${tag.name}">
+                <input class="tag" type="checkbox" name="${tag.name}">
               </label>
             `;
             return html;
           }, "")}
         </div>
+        <div id="price-placeholder"></div>
       </form>
     `;
 
@@ -1498,6 +1529,12 @@ class ComposerFormComponent extends __WEBPACK_IMPORTED_MODULE_2__framework_Compo
     const nodeElement = node.getElementById("create");
     this.sizesCollection = nodeElement.getElementsByClassName("size");
     this.ingredientsCollection = nodeElement.getElementsByClassName("ingredient");
+    this.tagsCollection = nodeElement.getElementsByClassName("tag");
+
+    node.getElementById("price-placeholder").appendChild(this.priceComponent.update({
+      size: this.size,
+      ingredients: this.ingredients
+    }));
 
     return node;
   }
@@ -1510,10 +1547,54 @@ class ComposerFormComponent extends __WEBPACK_IMPORTED_MODULE_2__framework_Compo
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Component__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_PizzaDataService__ = __webpack_require__(6);
+
+
+
+class PriceComponent extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__["a" /* default */] {
+  constructor(props) {
+    super(props);
+
+    this.host = document.createElement("div");
+    this.host.classList.add("flex-container");
+  }
+
+  render() {
+    const { size, ingredients} = this.props;
+
+    let totalPrice = size / 5;
+
+    if (__WEBPACK_IMPORTED_MODULE_1__services_PizzaDataService__["a" /* PIZZA_DATA_SERVICE */].ingredients) {
+      this.ingredientsData = __WEBPACK_IMPORTED_MODULE_1__services_PizzaDataService__["a" /* PIZZA_DATA_SERVICE */].ingredients
+        .filter(ingredient => ingredients.includes(ingredient.name))
+        .forEach(ingredient => {
+          totalPrice += ingredient.price
+        });
+    }
+
+    return `
+      <span>
+        Total price: 
+      </span>
+      <span>
+        ${totalPrice.toFixed(2)}
+      </span>
+    `;
+  }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (PriceComponent);
+
+/***/ }),
+/* 24 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_Sprite__ = __webpack_require__(24);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_Sprite__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__framework_Component__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__ = __webpack_require__(6);
 
 
 
@@ -1561,8 +1642,7 @@ class ComposerViewComponent extends __WEBPACK_IMPORTED_MODULE_2__framework_Compo
       spritesPool.push(pizza);
 
       ingredients.forEach(ingredient => {
-        console.log(ingredient);
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < 12; i++) {
           const ingrSprite = new __WEBPACK_IMPORTED_MODULE_1__services_Sprite__["a" /* default */](
             __WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__["a" /* PIZZA_DATA_SERVICE */].images[ingredient], random(80,240), random(80,240), 30, 30
           );
@@ -1585,7 +1665,7 @@ function random(min, max) {
 /* harmony default export */ __webpack_exports__["a"] = (ComposerViewComponent);
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";

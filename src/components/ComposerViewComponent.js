@@ -45,8 +45,7 @@ class ComposerViewComponent extends Component {
       spritesPool.push(pizza);
 
       ingredients.forEach(ingredient => {
-        console.log(ingredient);
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < 12; i++) {
           const ingrSprite = new Sprite(
             PIZZA_DATA_SERVICE.images[ingredient], random(80,240), random(80,240), 30, 30
           );

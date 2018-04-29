@@ -2,11 +2,21 @@ import { API } from "../utils/config";
 import { bindAll, toHtml } from "../utils/helper";
 import Component from "../framework/Component";
 import { PIZZA_DATA_SERVICE } from "../services/PizzaDataService";
+import PriceComponent from "./PriceComponent";
 
 class ComposerFormComponent extends Component {
   constructor(props) {
     super(props);
     console.log(this.props);
+
+    this.size = 60;
+    this.ingredients = [];
+    this.tags = [];
+
+    this.priceComponent = new PriceComponent({
+      size: this.size,
+      ingredients: this.ingredients
+    });
 
     this.host = document.createElement("div");
     this.host.classList.add("container");
@@ -19,20 +29,32 @@ class ComposerFormComponent extends Component {
 
 
   handleChange(ev) {
-    let size = 60;
-    const ingredients = [];
+    if (ev.target.type !== "radio" && ev.target.type !== "checkbox") return;
+
+    this.ingredients = [];
+    this.tags = [];
 
     for (let sizeElement of this.sizesCollection) {
       if (sizeElement.checked) {
-        size = Number(sizeElement.value);
+        this.size = Number(sizeElement.value);
         break;
       }
     }
+
     for (let ingredientElement of this.ingredientsCollection) {
-      if (ingredientElement.checked) ingredients.push(ingredientElement.name);
+      if (ingredientElement.checked) this.ingredients.push(ingredientElement.name);
     }
-    
-    this.props.onDataChange(ingredients, size);
+
+    for (let tagElement of this.tagsCollection) {
+      if (tagElement.checked) this.tags.push(tagElement.name);
+    }
+
+    this.priceComponent.update({
+      size: this.size,
+      ingredients: this.ingredients
+    });
+
+    this.props.onDataChange(this.ingredients, this.size);
   }
 
   handleSubmit(ev) {
@@ -96,12 +118,13 @@ class ComposerFormComponent extends Component {
             html += `
               <label title="${tag.name}"> 
                 ${tag.name}
-                <input type="checkbox" name="${tag.name}">
+                <input class="tag" type="checkbox" name="${tag.name}">
               </label>
             `;
             return html;
           }, "")}
         </div>
+        <div id="price-placeholder"></div>
       </form>
     `;
 
@@ -109,6 +132,12 @@ class ComposerFormComponent extends Component {
     const nodeElement = node.getElementById("create");
     this.sizesCollection = nodeElement.getElementsByClassName("size");
     this.ingredientsCollection = nodeElement.getElementsByClassName("ingredient");
+    this.tagsCollection = nodeElement.getElementsByClassName("tag");
+
+    node.getElementById("price-placeholder").appendChild(this.priceComponent.update({
+      size: this.size,
+      ingredients: this.ingredients
+    }));
 
     return node;
   }
