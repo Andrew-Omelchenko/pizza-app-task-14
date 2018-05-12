@@ -129,6 +129,14 @@ body {
     grid-column: 1;
     grid-row: 5; } }
 
+@media screen and (max-width: 639px) {
+  .pizza .pizza-container section {
+    width: 100%; } }
+
+@media screen and (min-width: 640px) {
+  .pizza .pizza-container section {
+    width: 50%; } }
+
 @media screen and (min-width: 961px) and (max-width: 1440px) {
   header, main, footer {
     margin-left: 0;
@@ -265,14 +273,15 @@ strong {
   font-weight: bold;
   border: 1px solid gray;
   border-radius: 5px;
-  margin: 10px;
   padding: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
   color: white;
   background: brown;
   cursor: pointer; }
-  .btn .btn-ordinary {
+  .btn.btn-ordinary {
     width: 210px; }
-  .btn .btn-wide {
+  .btn.btn-wide {
     width: 100%; }
   .btn:hover {
     opacity: 0.7; }
@@ -341,19 +350,65 @@ strong {
   text-align: center; }
 
 .pizza .pizza-container {
-  display: flex; }
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between; }
   .pizza .pizza-container #canvas-placeholder {
     text-align: center; }
     .pizza .pizza-container #canvas-placeholder canvas {
-      border: 2px solid #333; }
+      border-radius: 10px;
+      background-color: #eee; }
   .pizza .pizza-container section {
-    width: 50%; }
-    .pizza .pizza-container section label {
+    padding: 10px; }
+    .pizza .pizza-container section .topic {
+      margin-bottom: 10px; }
+    .pizza .pizza-container section label,
+    .pizza .pizza-container section p,
+    .pizza .pizza-container section span {
+      font-size: 10pt;
+      font-weight: bold; }
+    .pizza .pizza-container section label,
+    .pizza .pizza-container section p {
       display: block; }
-      .pizza .pizza-container section label > label {
-        display: inline-block; }
-    .pizza .pizza-container section .check-holder > label {
-      display: inline-block; }
-
-.btn-placeholder {
-  float: right; }
+      .pizza .pizza-container section label + label,
+      .pizza .pizza-container section p + label {
+        display: inline; }
+    .pizza .pizza-container section .check-holder {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-start; }
+      .pizza .pizza-container section .check-holder > .check-holder-label {
+        display: inline-block;
+        width: 24%;
+        margin: 2px; }
+        .pizza .pizza-container section .check-holder > .check-holder-label .ingredient-span,
+        .pizza .pizza-container section .check-holder > .check-holder-label .tag-span {
+          display: block;
+          height: 42px;
+          font-size: 9pt;
+          padding-top: 11px;
+          border: 2px solid #ccc;
+          white-space: nowrap;
+          overflow: hidden; }
+        .pizza .pizza-container section .check-holder > .check-holder-label .ingredient-span {
+          position: relative;
+          padding-left: 42px; }
+          .pizza .pizza-container section .check-holder > .check-holder-label .ingredient-span .ingredient-image {
+            width: 32px;
+            position: absolute;
+            top: 50%;
+            left: 5px;
+            transform: translateY(-50%); }
+        .pizza .pizza-container section .check-holder > .check-holder-label .tag-span {
+          text-align: center; }
+        .pizza .pizza-container section .check-holder > .check-holder-label input {
+          position: absolute;
+          opacity: 0; }
+          .pizza .pizza-container section .check-holder > .check-holder-label input:checked + .ingredient-span,
+          .pizza .pizza-container section .check-holder > .check-holder-label input:checked + .tag-span {
+            border: 2px solid forestgreen;
+            background-color: #dfd; }
+    .pizza .pizza-container section .btn-placeholder {
+      float: right; }
+      .pizza .pizza-container section .btn-placeholder #order-btn {
+        margin-left: 10px; }

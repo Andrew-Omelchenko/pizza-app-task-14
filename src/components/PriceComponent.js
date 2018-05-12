@@ -27,7 +27,7 @@ class PriceComponent extends Component {
         Total price: 
       </span>
       <span>
-        ${totalPrice.toFixed(2)}
+        &dollar;${totalPrice.toFixed(2)}
       </span>
     `;
   }

@@ -1468,68 +1468,79 @@ class ComposerFormComponent extends __WEBPACK_IMPORTED_MODULE_2__framework_Compo
   render() {
     const htmlString = `
       <form id="create">
-        <label for="name">Pizza and order name: </label>
-        <input 
-          type="text" 
-          name="name" 
-          min-length="3" 
-          max-length="24"
-          placeholder="Pizza and order name" 
-          value="" 
-          required>
-        <label for="size">
-          Pizza size: 
+        <div class="topic">
+          <label for="name">Pizza and order name: </label>
+          <input 
+            type="text" 
+            name="name" 
+            min-length="3" 
+            max-length="24"
+            placeholder="Pizza and order name" 
+            value="" 
+            required>
+        </div>
+        <div class="topic">
+          <label for="size">Pizza size: </label>
           <label>
-            30
             <input 
               class="size" 
               type="radio" 
               name="size" 
               value="30">
+            30
           </label>
           <label>
-            45
             <input 
               class="size" 
               type="radio" 
               name="size" 
               value="45">
+            45
           </label>
           <label>
-            60
             <input 
               class="size" 
               type="radio" 
               name="size" 
               value="60"
               checked>
+            60
           </label>
-        </label>
-        <label>Ingredients: </label>
-        <div class="check-holder">
+        </div>
+        <p>Ingredients: </p>
+        <div class="check-holder topic">
           ${__WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__["a" /* PIZZA_DATA_SERVICE */].ingredients.reduce((html, ingr) => {
             html += `
-              <label title="${ingr.name}"> 
-                <img src="${__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].BASE_URL}${ingr.image_url}" alt="${ingr.name}">
+              <label class="check-holder-label" title="${ingr.name}"> 
                 <input class="ingredient" type="checkbox" name="${ingr.name}" value="${ingr.id}">
+                <span class="ingredient-span">
+                  <img 
+                    src="${__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].BASE_URL}${ingr.image_url}" 
+                    alt="${ingr.name}"
+                    class="ingredient-image">
+                  ${ingr.name}
+                </span>
               </label>
             `;
             return html;
           }, "")}
         </div>
-        <div class="check-holder">
+        <p>Tags: </p>
+        <div class="check-holder topic">
           ${__WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__["a" /* PIZZA_DATA_SERVICE */].tags.reduce((html, tag) => {
             html += `
-              <label title="${tag.name}"> 
-                ${tag.name}
+              <label class="check-holder-label" title="${tag.name}"> 
                 <input class="tag" type="checkbox" name="${tag.name}">
+                <span class="tag-span">
+                  ${tag.name}
+                </span>
               </label>
             `;
             return html;
           }, "")}
         </div>
-        <div id="price-placeholder"></div>
-        <div class="btn-placeholder">
+        <div class="topic" id="price-placeholder"></div>
+        <div class="btn-placeholder topic">
           <button class="btn" type="button" id="cancel-btn">Cancel</button>
           <button class="btn" type="submit" id="order-btn">Order</button>
         </div>
@@ -1589,7 +1600,7 @@ class PriceComponent extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__[
         Total price: 
       </span>
       <span>
-        ${totalPrice.toFixed(2)}
+        &dollar;${totalPrice.toFixed(2)}
       </span>
     `;
   }
