@@ -29,6 +29,9 @@ class ComposerViewComponent extends Component {
 
   render() {
     const { isDataReady, ingredients, size } = this.props;
+    const diameter = size + 240;
+    const ingrSize = Math.floor(diameter / 10);
+    const maxI = 18;
 
     const sprites = {};
     const spritesPool = [];
@@ -38,20 +41,21 @@ class ComposerViewComponent extends Component {
         PIZZA_DATA_SERVICE.images["pizza"], 
         this.canvasWidth / 2, 
         this.canvasHeight / 2, 
-        size + 240, 
-        size + 240
+        diameter, 
+        diameter
       );
       sprites["pizza"] = pizza;
       spritesPool.push(pizza);
 
       ingredients.forEach(ingredient => {
-        for (let i = 0; i < 12; i++) {
+        for (let i = 0; i < maxI; i++) {
+          const point = getPoint(this.canvasWidth, diameter, i, maxI);
           const ingrSprite = new Sprite(
             PIZZA_DATA_SERVICE.images[ingredient], 
-            random(80,240), 
-            random(80,240), 
-            30, 
-            30
+            point.x, 
+            point.y, 
+            ingrSize, 
+            ingrSize
           );
           spritesPool.push(ingrSprite);
         }
@@ -66,7 +70,22 @@ class ComposerViewComponent extends Component {
 }
 
 function random(min, max) {
-  return Math.floor(min + Math.random() * (max - min + 1));
+  return min + Math.random() * (max - min + 1.0);
+}
+
+function getPoint(canvSize, diam, iter, maxIter) {
+  const radiusSquared = (diam - 63) * (diam - 63) / 4;
+  const randomRadius = Math.sqrt(random(0, radiusSquared));
+  const randomAngle = random(2 * iter * Math.PI / maxIter, 2 * (iter + 1) * Math.PI / maxIter);
+  const point = {
+    x: 0.0,
+    y: 0.0
+  };
+  const offset = canvSize / 2;
+  point.x = Math.floor(offset + randomRadius * Math.cos(randomAngle));
+  point.y = Math.floor(offset + randomRadius * Math.sin(randomAngle));
+  // console.log(radiusSquared, randomRadius, randomAngle, offset, point.x, point.y);
+  return point;
 }
 
 export default ComposerViewComponent;
