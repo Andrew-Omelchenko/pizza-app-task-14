@@ -32,6 +32,15 @@ class ComposerFormComponent extends Component {
   handleChange(ev) {
     if (ev.target.type !== "radio" && ev.target.type !== "checkbox") return;
 
+    if (this.ingredients.length === 6 && 
+      ev.target.className === "ingredient" && 
+      ev.target.checked === true) {
+      // console.log("Only six ingredients are allowed!", ev);
+      alert("Only six ingredients are allowed!");
+      ev.target.checked = false;
+      return;
+    }
+
     this.ingredients = [];
     this.tags = [];
 
@@ -43,19 +52,22 @@ class ComposerFormComponent extends Component {
     }
 
     for (let ingredientElement of this.ingredientsCollection) {
-      if (ingredientElement.checked) this.ingredients.push(ingredientElement.name);
+      if (ingredientElement.checked) this.ingredients.push({
+        name: ingredientElement.name,
+        id: Number(ingredientElement.value) 
+      });
     }
 
     for (let tagElement of this.tagsCollection) {
-      if (tagElement.checked) this.tags.push(tagElement.name);
+      if (tagElement.checked) this.tags.push(Number(tagElement.value));
     }
 
     this.priceComponent.update({
       size: this.size,
-      ingredients: this.ingredients
+      ingredients: this.ingredients.map(ingr => ingr.name)
     });
 
-    this.props.onDataChange(this.ingredients, this.size);
+    this.props.onDataChange(this.ingredients.map(ingr => ingr.name), this.size);
   }
 
   handleClick(ev) {
@@ -66,6 +78,25 @@ class ComposerFormComponent extends Component {
 
   handleSubmit(ev) {
     ev.preventDefault();
+
+    const form = document.getElementById("create");
+    const data = new FormData();
+
+    data.append("name", form.name.value);
+    data.append("description", "");
+    data.append("size", this.size);
+    data.append("ingredients", JSON.stringify(this.ingredients.map(ingr => ingr.id)));
+    data.append("tags", JSON.stringify(this.tags));
+
+    // console.log(
+    //   data.get("name"),
+    //   data.get("description"),
+    //   data.get("size"),
+    //   data.get("ingredients"),
+    //   data.get("tags")
+    // );
+    
+    this.props.onCreatePizza(data);
   }
 
   render() {
@@ -120,7 +151,8 @@ class ComposerFormComponent extends Component {
                   <img 
                     src="${API.BASE_URL}${ingr.image_url}" 
                     alt="${ingr.name}"
-                    class="ingredient-image">
+                    class="ingredient-image"
+                    crossorigin="">
                   ${ingr.name}
                 </span>
               </label>
@@ -133,7 +165,7 @@ class ComposerFormComponent extends Component {
           ${PIZZA_DATA_SERVICE.tags.reduce((html, tag) => {
             html += `
               <label class="check-holder-label" title="${tag.name}"> 
-                <input class="tag" type="checkbox" name="${tag.name}">
+                <input class="tag" type="checkbox" name="${tag.name}" value="${tag.id}">
                 <span class="tag-span">
                   ${tag.name}
                 </span>

@@ -24,6 +24,7 @@ class PizzaDataService {
   _loadImage(name, url) {
     return new Promise((resolve, reject) => {
       const image = new Image();
+      image.crossOrigin = "";
       image.onload = () => resolve({ name, image });
       image.onerror = (e) => reject(e);
       image.src = url;

@@ -16,7 +16,8 @@ class PizzaComposer extends Component {
 
     this.headerComponent = new HeaderComponent();
     this.composerFormComponent = new ComposerFormComponent({
-      onDataChange: this.onDataChange
+      onDataChange: this.onDataChange,
+      onCreatePizza: this.onCreatePizza
     });
     this.composerViewComponent = new ComposerViewComponent({ 
       isDataReady: this.state.isDataReady,
@@ -28,7 +29,7 @@ class PizzaComposer extends Component {
     this.host = document.createElement("div");
     this.host.classList.add("container");
 
-    bindAll(this, "onDataChange");
+    bindAll(this, "onDataChange", "onCreatePizza");
 
     this._onInit();
   }
@@ -42,12 +43,27 @@ class PizzaComposer extends Component {
   }
 
   onDataChange(ingredients, size) {
-    console.log(ingredients, size);
+    // console.log(ingredients, size);
     this.composerViewComponent.update({
       isDataReady: this.state.isDataReady,
       ingredients,
       size
     });
+  }
+
+  onCreatePizza(data) {
+    const { canvas } = this.composerViewComponent;
+
+    // data.append("image", canvas.toBlob(idata => idata));
+
+    // console.log(
+    //   data.get("name"),
+    //   data.get("description"),
+    //   data.get("size"),
+    //   data.get("ingredients"),
+    //   data.get("tags"),
+    //   data.get("image")
+    // );
   }
 
   render() {
@@ -68,7 +84,8 @@ class PizzaComposer extends Component {
     const node = toHtml(htmlString);
     node.getElementById("header").append(this.headerComponent.update({}));
     node.getElementById("data-placeholder").append(this.composerFormComponent.update({
-      onDataChange: this.onDataChange
+      onDataChange: this.onDataChange,
+      onCreatePizza: this.onCreatePizza
     }));
     node.getElementById("canvas-placeholder").append(this.composerViewComponent.update({
       isDataReady,

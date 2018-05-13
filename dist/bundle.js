@@ -453,6 +453,7 @@ class PizzaDataService {
   _loadImage(name, url) {
     return new Promise((resolve, reject) => {
       const image = new Image();
+      image.crossOrigin = "";
       image.onload = () => resolve({ name, image });
       image.onerror = (e) => reject(e);
       image.src = url;
@@ -507,7 +508,7 @@ const PIZZA_DATA_SERVICE = new PizzaDataService();
 
 class AuthHttpService {
   get(endpoint) {
-    const headers = new Headers({ "Content-Type": "application/json" });
+    const headers = new Headers({ "content-type": "application/json" });
     
     if (__WEBPACK_IMPORTED_MODULE_2__AuthService__["a" /* AUTH_SERVICE */].isAuthorized()) {
       headers.append("Authorization", `Bearer ${__WEBPACK_IMPORTED_MODULE_2__AuthService__["a" /* AUTH_SERVICE */].token}`);
@@ -1338,7 +1339,8 @@ class PizzaComposer extends __WEBPACK_IMPORTED_MODULE_1__framework_Component__["
 
     this.headerComponent = new __WEBPACK_IMPORTED_MODULE_2__HeaderComponent__["a" /* default */]();
     this.composerFormComponent = new __WEBPACK_IMPORTED_MODULE_3__ComposerFormComponent__["a" /* default */]({
-      onDataChange: this.onDataChange
+      onDataChange: this.onDataChange,
+      onCreatePizza: this.onCreatePizza
     });
     this.composerViewComponent = new __WEBPACK_IMPORTED_MODULE_4__ComposerViewComponent__["a" /* default */]({ 
       isDataReady: this.state.isDataReady,
@@ -1350,7 +1352,7 @@ class PizzaComposer extends __WEBPACK_IMPORTED_MODULE_1__framework_Component__["
     this.host = document.createElement("div");
     this.host.classList.add("container");
 
-    Object(__WEBPACK_IMPORTED_MODULE_0__utils_helper__["a" /* bindAll */])(this, "onDataChange");
+    Object(__WEBPACK_IMPORTED_MODULE_0__utils_helper__["a" /* bindAll */])(this, "onDataChange", "onCreatePizza");
 
     this._onInit();
   }
@@ -1364,12 +1366,27 @@ class PizzaComposer extends __WEBPACK_IMPORTED_MODULE_1__framework_Component__["
   }
 
   onDataChange(ingredients, size) {
-    console.log(ingredients, size);
+    // console.log(ingredients, size);
     this.composerViewComponent.update({
       isDataReady: this.state.isDataReady,
       ingredients,
       size
     });
+  }
+
+  onCreatePizza(data) {
+    const { canvas } = this.composerViewComponent;
+
+    // data.append("image", canvas.toBlob(idata => idata));
+
+    // console.log(
+    //   data.get("name"),
+    //   data.get("description"),
+    //   data.get("size"),
+    //   data.get("ingredients"),
+    //   data.get("tags"),
+    //   data.get("image")
+    // );
   }
 
   render() {
@@ -1390,7 +1407,8 @@ class PizzaComposer extends __WEBPACK_IMPORTED_MODULE_1__framework_Component__["
     const node = Object(__WEBPACK_IMPORTED_MODULE_0__utils_helper__["f" /* toHtml */])(htmlString);
     node.getElementById("header").append(this.headerComponent.update({}));
     node.getElementById("data-placeholder").append(this.composerFormComponent.update({
-      onDataChange: this.onDataChange
+      onDataChange: this.onDataChange,
+      onCreatePizza: this.onCreatePizza
     }));
     node.getElementById("canvas-placeholder").append(this.composerViewComponent.update({
       isDataReady,
@@ -1449,6 +1467,15 @@ class ComposerFormComponent extends __WEBPACK_IMPORTED_MODULE_2__framework_Compo
   handleChange(ev) {
     if (ev.target.type !== "radio" && ev.target.type !== "checkbox") return;
 
+    if (this.ingredients.length === 6 && 
+      ev.target.className === "ingredient" && 
+      ev.target.checked === true) {
+      // console.log("Only six ingredients are allowed!", ev);
+      alert("Only six ingredients are allowed!");
+      ev.target.checked = false;
+      return;
+    }
+
     this.ingredients = [];
     this.tags = [];
 
@@ -1460,19 +1487,22 @@ class ComposerFormComponent extends __WEBPACK_IMPORTED_MODULE_2__framework_Compo
     }
 
     for (let ingredientElement of this.ingredientsCollection) {
-      if (ingredientElement.checked) this.ingredients.push(ingredientElement.name);
+      if (ingredientElement.checked) this.ingredients.push({
+        name: ingredientElement.name,
+        id: Number(ingredientElement.value) 
+      });
     }
 
     for (let tagElement of this.tagsCollection) {
-      if (tagElement.checked) this.tags.push(tagElement.name);
+      if (tagElement.checked) this.tags.push(Number(tagElement.value));
     }
 
     this.priceComponent.update({
       size: this.size,
-      ingredients: this.ingredients
+      ingredients: this.ingredients.map(ingr => ingr.name)
     });
 
-    this.props.onDataChange(this.ingredients, this.size);
+    this.props.onDataChange(this.ingredients.map(ingr => ingr.name), this.size);
   }
 
   handleClick(ev) {
@@ -1483,6 +1513,25 @@ class ComposerFormComponent extends __WEBPACK_IMPORTED_MODULE_2__framework_Compo
 
   handleSubmit(ev) {
     ev.preventDefault();
+
+    const form = document.getElementById("create");
+    const data = new FormData();
+
+    data.append("name", form.name.value);
+    data.append("description", "");
+    data.append("size", this.size);
+    data.append("ingredients", JSON.stringify(this.ingredients.map(ingr => ingr.id)));
+    data.append("tags", JSON.stringify(this.tags));
+
+    // console.log(
+    //   data.get("name"),
+    //   data.get("description"),
+    //   data.get("size"),
+    //   data.get("ingredients"),
+    //   data.get("tags")
+    // );
+    
+    this.props.onCreatePizza(data);
   }
 
   render() {
@@ -1537,7 +1586,8 @@ class ComposerFormComponent extends __WEBPACK_IMPORTED_MODULE_2__framework_Compo
                   <img 
                     src="${__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].BASE_URL}${ingr.image_url}" 
                     alt="${ingr.name}"
-                    class="ingredient-image">
+                    class="ingredient-image"
+                    crossorigin="">
                   ${ingr.name}
                 </span>
               </label>
@@ -1550,7 +1600,7 @@ class ComposerFormComponent extends __WEBPACK_IMPORTED_MODULE_2__framework_Compo
           ${__WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__["a" /* PIZZA_DATA_SERVICE */].tags.reduce((html, tag) => {
             html += `
               <label class="check-holder-label" title="${tag.name}"> 
-                <input class="tag" type="checkbox" name="${tag.name}">
+                <input class="tag" type="checkbox" name="${tag.name}" value="${tag.id}">
                 <span class="tag-span">
                   ${tag.name}
                 </span>

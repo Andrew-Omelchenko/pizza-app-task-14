@@ -4,7 +4,7 @@ import { AUTH_SERVICE } from "./AuthService";
 
 class AuthHttpService {
   get(endpoint) {
-    const headers = new Headers({ "Content-Type": "application/json" });
+    const headers = new Headers({ "content-type": "application/json" });
     
     if (AUTH_SERVICE.isAuthorized()) {
       headers.append("Authorization", `Bearer ${AUTH_SERVICE.token}`);
