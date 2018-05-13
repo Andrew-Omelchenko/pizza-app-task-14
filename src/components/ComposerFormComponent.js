@@ -79,6 +79,11 @@ class ComposerFormComponent extends Component {
   handleSubmit(ev) {
     ev.preventDefault();
 
+    if (this.ingredients.length === 0) {
+      alert("Ingredients cannot be empty");
+      return;
+    }
+
     const form = document.getElementById("create");
     const data = new FormData();
 
@@ -88,13 +93,13 @@ class ComposerFormComponent extends Component {
     data.append("ingredients", JSON.stringify(this.ingredients.map(ingr => ingr.id)));
     data.append("tags", JSON.stringify(this.tags));
 
-    // console.log(
-    //   data.get("name"),
-    //   data.get("description"),
-    //   data.get("size"),
-    //   data.get("ingredients"),
-    //   data.get("tags")
-    // );
+    console.log(
+      data.get("name"),
+      data.get("description"),
+      data.get("size"),
+      data.get("ingredients"),
+      data.get("tags")
+    );
     
     this.props.onCreatePizza(data);
   }

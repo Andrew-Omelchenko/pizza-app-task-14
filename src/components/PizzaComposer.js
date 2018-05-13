@@ -5,6 +5,7 @@ import ComposerFormComponent from "./ComposerFormComponent";
 import ComposerViewComponent from "./ComposerViewComponent";
 import FooterComponent from "./FooterComponent";
 import { PIZZA_DATA_SERVICE } from "../services/PizzaDataService";
+import { AUTH_HTTP_SERVICE } from "../services/AuthHttpService";
 
 class PizzaComposer extends Component {
   constructor(props) {
@@ -54,16 +55,30 @@ class PizzaComposer extends Component {
   onCreatePizza(data) {
     const { canvas } = this.composerViewComponent;
 
-    // data.append("image", canvas.toBlob(idata => idata));
-
-    // console.log(
-    //   data.get("name"),
-    //   data.get("description"),
-    //   data.get("size"),
-    //   data.get("ingredients"),
-    //   data.get("tags"),
-    //   data.get("image")
-    // );
+    canvas.toBlob(imageData => {
+      data.append("image", imageData);
+      // console.log(
+      //   data.get("name"),
+      //   data.get("description"),
+      //   data.get("size"),
+      //   data.get("ingredients"),
+      //   data.get("tags"),
+      //   data.get("image")
+      // );
+      AUTH_HTTP_SERVICE.createPizza(data)
+        .then(res => {
+          console.log(res);
+          if (res.answer.success) {
+            console.log("Success");
+            window.location.hash = "/";
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          console.log("Error creating pizza");
+          // document.getElementById("alert-placeholder").innerHTML = err.answer.error;
+        });
+    });
   }
 
   render() {

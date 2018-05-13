@@ -15,10 +15,16 @@ class AuthHttpService {
   }
 
   post(endpoint, payload) {
+    const headers = new Headers();
+
+    if (AUTH_SERVICE.isAuthorized()) {
+      headers.append("Authorization", `Bearer ${AUTH_SERVICE.token}`);
+    }
+
     return fetch(`${API.BASE_URL}${endpoint}`, {
       method: 'POST',
-      body: JSON.stringify(payload),
-      headers: new Headers({ "content-type": "application/json" }),
+      body: payload,
+      headers
     })
       .then(processResponse);
   }
@@ -28,11 +34,19 @@ class AuthHttpService {
   }
   
   createUser(userData) {
-    return this.post(API.ENDPOINTS.CREATE_USER, userData);
+    return this.post(API.ENDPOINTS.CREATE_USER, JSON.stringify(userData));
   }
 
   getMyInfo() {
     return this.get(API.ENDPOINTS.MY_INFO);
+  }
+
+  getPizzaList() {
+    return this.get(API.ENDPOINTS.PIZZA_LIST);
+  }
+
+  createPizza(data) {
+    return this.post(API.ENDPOINTS.CREATE_PIZZA, data);
   }
 }
 

@@ -1,4 +1,5 @@
 import Component from "../framework/Component";
+import { AUTH_HTTP_SERVICE } from "../services/AuthHttpService";
 
 class DashboardComponent extends Component {
   constructor(props) {
@@ -16,6 +17,17 @@ class DashboardComponent extends Component {
   }
 
   render() {
+    AUTH_HTTP_SERVICE.getPizzaList()
+    .then(res => {
+      console.log(res);
+      if (res.answer.success) {
+        console.log("Success");
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      console.log("Error getting list of pizzas");
+    });
 
     let ordersString = "";
 

@@ -266,6 +266,71 @@ class HeaderComponent extends __WEBPACK_IMPORTED_MODULE_1__framework_Component__
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_helper__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__AuthService__ = __webpack_require__(5);
+
+
+
+
+class AuthHttpService {
+  get(endpoint) {
+    const headers = new Headers({ "content-type": "application/json" });
+    
+    if (__WEBPACK_IMPORTED_MODULE_2__AuthService__["a" /* AUTH_SERVICE */].isAuthorized()) {
+      headers.append("Authorization", `Bearer ${__WEBPACK_IMPORTED_MODULE_2__AuthService__["a" /* AUTH_SERVICE */].token}`);
+    }
+
+    return fetch(`${__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].BASE_URL}${endpoint}`, { headers })
+      .then(__WEBPACK_IMPORTED_MODULE_1__utils_helper__["e" /* processResponse */]);
+  }
+
+  post(endpoint, payload) {
+    const headers = new Headers();
+
+    if (__WEBPACK_IMPORTED_MODULE_2__AuthService__["a" /* AUTH_SERVICE */].isAuthorized()) {
+      headers.append("Authorization", `Bearer ${__WEBPACK_IMPORTED_MODULE_2__AuthService__["a" /* AUTH_SERVICE */].token}`);
+    }
+
+    return fetch(`${__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].BASE_URL}${endpoint}`, {
+      method: 'POST',
+      body: payload,
+      headers
+    })
+      .then(__WEBPACK_IMPORTED_MODULE_1__utils_helper__["e" /* processResponse */]);
+  }
+  
+  getStores() {
+    return this.get(__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].ENDPOINTS.STORE_LIST);
+  }
+  
+  createUser(userData) {
+    return this.post(__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].ENDPOINTS.CREATE_USER, JSON.stringify(userData));
+  }
+
+  getMyInfo() {
+    return this.get(__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].ENDPOINTS.MY_INFO);
+  }
+
+  getPizzaList() {
+    return this.get(__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].ENDPOINTS.PIZZA_LIST);
+  }
+
+  createPizza(data) {
+    return this.post(__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].ENDPOINTS.CREATE_PIZZA, data);
+  }
+}
+
+const AUTH_HTTP_SERVICE = new AuthHttpService();
+/* harmony export (immutable) */ __webpack_exports__["a"] = AUTH_HTTP_SERVICE;
+
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Component__ = __webpack_require__(0);
 
 
@@ -296,11 +361,11 @@ class FooterComponent extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_helper__ = __webpack_require__(1);
 
 
@@ -390,7 +455,7 @@ const AUTH_SERVICE = new AuthService();
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -421,12 +486,12 @@ const API = {
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__AuthHttpService__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__AuthHttpService__ = __webpack_require__(3);
 
 
 
@@ -492,57 +557,6 @@ class PizzaDataService {
 
 const PIZZA_DATA_SERVICE = new PizzaDataService();
 /* harmony export (immutable) */ __webpack_exports__["a"] = PIZZA_DATA_SERVICE;
-
-
-/***/ }),
-/* 7 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_helper__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__AuthService__ = __webpack_require__(4);
-
-
-
-
-class AuthHttpService {
-  get(endpoint) {
-    const headers = new Headers({ "content-type": "application/json" });
-    
-    if (__WEBPACK_IMPORTED_MODULE_2__AuthService__["a" /* AUTH_SERVICE */].isAuthorized()) {
-      headers.append("Authorization", `Bearer ${__WEBPACK_IMPORTED_MODULE_2__AuthService__["a" /* AUTH_SERVICE */].token}`);
-    }
-
-    return fetch(`${__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].BASE_URL}${endpoint}`, { headers })
-      .then(__WEBPACK_IMPORTED_MODULE_1__utils_helper__["e" /* processResponse */]);
-  }
-
-  post(endpoint, payload) {
-    return fetch(`${__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].BASE_URL}${endpoint}`, {
-      method: 'POST',
-      body: JSON.stringify(payload),
-      headers: new Headers({ "content-type": "application/json" }),
-    })
-      .then(__WEBPACK_IMPORTED_MODULE_1__utils_helper__["e" /* processResponse */]);
-  }
-  
-  getStores() {
-    return this.get(__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].ENDPOINTS.STORE_LIST);
-  }
-  
-  createUser(userData) {
-    return this.post(__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].ENDPOINTS.CREATE_USER, userData);
-  }
-
-  getMyInfo() {
-    return this.get(__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].ENDPOINTS.MY_INFO);
-  }
-}
-
-const AUTH_HTTP_SERVICE = new AuthHttpService();
-/* harmony export (immutable) */ __webpack_exports__["a"] = AUTH_HTTP_SERVICE;
-
 
 
 /***/ }),
@@ -651,7 +665,7 @@ class Router extends __WEBPACK_IMPORTED_MODULE_0__Component__["a" /* default */]
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__services_AuthService__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__services_AuthService__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_Dashboard__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_Login__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_Register__ = __webpack_require__(17);
@@ -713,7 +727,7 @@ const routes = [
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Component__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HeaderComponent__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__DashboardComponent__ = __webpack_require__(14);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__FooterComponent__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__FooterComponent__ = __webpack_require__(4);
 
 
 
@@ -801,7 +815,7 @@ class Clock extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__["a" /* de
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Component__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_AuthService__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_AuthService__ = __webpack_require__(5);
 
 
 
@@ -861,6 +875,8 @@ class Options extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__["a" /* 
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Component__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_AuthHttpService__ = __webpack_require__(3);
+
 
 
 class DashboardComponent extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__["a" /* default */] {
@@ -879,6 +895,17 @@ class DashboardComponent extends __WEBPACK_IMPORTED_MODULE_0__framework_Componen
   }
 
   render() {
+    __WEBPACK_IMPORTED_MODULE_1__services_AuthHttpService__["a" /* AUTH_HTTP_SERVICE */].getPizzaList()
+    .then(res => {
+      console.log(res);
+      if (res.answer.success) {
+        console.log("Success");
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      console.log("Error getting list of pizzas");
+    });
 
     let ordersString = "";
 
@@ -927,7 +954,7 @@ class DashboardComponent extends __WEBPACK_IMPORTED_MODULE_0__framework_Componen
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Component__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HeaderComponent__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__LoginComponent__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__FooterComponent__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__FooterComponent__ = __webpack_require__(4);
 
 
 
@@ -963,7 +990,7 @@ class Login extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__["a" /* de
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Component__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_AuthService__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_AuthService__ = __webpack_require__(5);
 
 
 
@@ -1048,7 +1075,7 @@ class LoginComponent extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__[
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Component__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HeaderComponent__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__RegisterComponent__ = __webpack_require__(18);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__FooterComponent__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__FooterComponent__ = __webpack_require__(4);
 
 
 
@@ -1084,7 +1111,7 @@ class Register extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__["a" /*
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Component__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_AuthHttpService__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_AuthHttpService__ = __webpack_require__(3);
 
 
 
@@ -1224,7 +1251,7 @@ class RegisterComponent extends __WEBPACK_IMPORTED_MODULE_0__framework_Component
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Component__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HeaderComponent__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__MyInfoComponent__ = __webpack_require__(20);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__FooterComponent__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__FooterComponent__ = __webpack_require__(4);
 
 
 
@@ -1260,7 +1287,7 @@ class MyInfo extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__["a" /* d
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Component__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_AuthHttpService__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_AuthHttpService__ = __webpack_require__(3);
 
 
 
@@ -1319,8 +1346,10 @@ class MyInfoComponent extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__HeaderComponent__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ComposerFormComponent__ = __webpack_require__(22);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ComposerViewComponent__ = __webpack_require__(24);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__FooterComponent__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__services_PizzaDataService__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__FooterComponent__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__services_PizzaDataService__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__services_AuthHttpService__ = __webpack_require__(3);
+
 
 
 
@@ -1377,16 +1406,30 @@ class PizzaComposer extends __WEBPACK_IMPORTED_MODULE_1__framework_Component__["
   onCreatePizza(data) {
     const { canvas } = this.composerViewComponent;
 
-    // data.append("image", canvas.toBlob(idata => idata));
-
-    // console.log(
-    //   data.get("name"),
-    //   data.get("description"),
-    //   data.get("size"),
-    //   data.get("ingredients"),
-    //   data.get("tags"),
-    //   data.get("image")
-    // );
+    canvas.toBlob(imageData => {
+      data.append("image", imageData);
+      // console.log(
+      //   data.get("name"),
+      //   data.get("description"),
+      //   data.get("size"),
+      //   data.get("ingredients"),
+      //   data.get("tags"),
+      //   data.get("image")
+      // );
+      __WEBPACK_IMPORTED_MODULE_7__services_AuthHttpService__["a" /* AUTH_HTTP_SERVICE */].createPizza(data)
+        .then(res => {
+          console.log(res);
+          if (res.answer.success) {
+            console.log("Success");
+            window.location.hash = "/";
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          console.log("Error creating pizza");
+          // document.getElementById("alert-placeholder").innerHTML = err.answer.error;
+        });
+    });
   }
 
   render() {
@@ -1428,10 +1471,10 @@ class PizzaComposer extends __WEBPACK_IMPORTED_MODULE_1__framework_Component__["
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_helper__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__framework_Component__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__PriceComponent__ = __webpack_require__(23);
 
 
@@ -1514,6 +1557,11 @@ class ComposerFormComponent extends __WEBPACK_IMPORTED_MODULE_2__framework_Compo
   handleSubmit(ev) {
     ev.preventDefault();
 
+    if (this.ingredients.length === 0) {
+      alert("Ingredients cannot be empty");
+      return;
+    }
+
     const form = document.getElementById("create");
     const data = new FormData();
 
@@ -1523,13 +1571,13 @@ class ComposerFormComponent extends __WEBPACK_IMPORTED_MODULE_2__framework_Compo
     data.append("ingredients", JSON.stringify(this.ingredients.map(ingr => ingr.id)));
     data.append("tags", JSON.stringify(this.tags));
 
-    // console.log(
-    //   data.get("name"),
-    //   data.get("description"),
-    //   data.get("size"),
-    //   data.get("ingredients"),
-    //   data.get("tags")
-    // );
+    console.log(
+      data.get("name"),
+      data.get("description"),
+      data.get("size"),
+      data.get("ingredients"),
+      data.get("tags")
+    );
     
     this.props.onCreatePizza(data);
   }
@@ -1640,7 +1688,7 @@ class ComposerFormComponent extends __WEBPACK_IMPORTED_MODULE_2__framework_Compo
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Component__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_PizzaDataService__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_PizzaDataService__ = __webpack_require__(7);
 
 
 
@@ -1686,7 +1734,7 @@ class PriceComponent extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__[
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_helper__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_Sprite__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__framework_Component__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__ = __webpack_require__(7);
 
 
 
