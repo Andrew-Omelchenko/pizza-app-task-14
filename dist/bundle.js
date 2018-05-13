@@ -124,6 +124,7 @@ class Component {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (immutable) */ __webpack_exports__["c"] = getPoint;
 const bindAll = (context, ...names) => {
   names.forEach(name => {
     if (typeof context[name] === "function") {
@@ -144,7 +145,7 @@ const toHtml = string => {
 
   return template.content;
 };
-/* harmony export (immutable) */ __webpack_exports__["e"] = toHtml;
+/* harmony export (immutable) */ __webpack_exports__["f"] = toHtml;
 
 
 const URL_PARAM_REGEXP = /:\w+/g;
@@ -152,7 +153,7 @@ const URL_PARAM_REGEXP = /:\w+/g;
 const isUrlParam = path => URL_PARAM_REGEXP.test(path);
 const urlToRegExp = url => RegExp(`^${url.replace(URL_PARAM_REGEXP, "(.*)")}$`);
 const isEqualPaths = (template, url) => urlToRegExp(template).test(url);
-/* harmony export (immutable) */ __webpack_exports__["c"] = isEqualPaths;
+/* harmony export (immutable) */ __webpack_exports__["d"] = isEqualPaths;
 
 
 // template -> /user/:id
@@ -184,43 +185,31 @@ const processResponse = res => {
     }
   return res.json().then(answer => Promise.reject({ answer, status: res.status }));
 };
-/* harmony export (immutable) */ __webpack_exports__["d"] = processResponse;
+/* harmony export (immutable) */ __webpack_exports__["e"] = processResponse;
 
+
+function random(min, max) {
+  return min + Math.random() * (max - min + 1.0);
+};
+
+function getPoint(canvSize, diam, iter, maxIter) {
+  const radiusSquared = (diam - 63) * (diam - 63) / 4;
+  const randomRadius = Math.sqrt(random(0, radiusSquared));
+  const randomAngle = random(2 * iter * Math.PI / maxIter, 2 * (iter + 1) * Math.PI / maxIter);
+  const point = {
+    x: 0.0,
+    y: 0.0
+  };
+  const offset = canvSize / 2;
+  point.x = Math.floor(offset + randomRadius * Math.cos(randomAngle));
+  point.y = Math.floor(offset + randomRadius * Math.sin(randomAngle));
+  // console.log(radiusSquared, randomRadius, randomAngle, offset, point.x, point.y);
+  return point;
+};
 
 
 /***/ }),
 /* 2 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-const API = {
-  BASE_URL: "https://pizza-tele.ga/",
-  ENDPOINTS: {
-    STORE_LIST: "api/v1/store/list",
-    CREATE_USER: "api/v1/user/create",
-    LOGIN: "api/v1/user/login",
-    MY_INFO: "api/v1/user/my_info",
-    PIZZA_LIST: "api/v1/pizza/list",
-    CREATE_PIZZA: "api/v1/pizza/create",
-    INGREDIENT_LIST: "api/v1/ingredient/list",
-    TAG_LIST: "api/v1/tag/list"
-  },
-  CRUST_PIZZA: "static/images/pizza.png"
-};
-/* harmony export (immutable) */ __webpack_exports__["a"] = API;
-
-
-// export const STATUS_CODES = {
-//   OK: "200",
-//   BAD_REQUEST: "400",
-//   UNAUTHORIZED: "401",
-//   FORBIDDEN: "403",
-//   NOT_FOUND: "404"
-// };
-
-
-/***/ }),
-/* 3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -261,7 +250,7 @@ class HeaderComponent extends __WEBPACK_IMPORTED_MODULE_1__framework_Component__
       </div>
     `;
 
-    const node = Object(__WEBPACK_IMPORTED_MODULE_0__utils_helper__["e" /* toHtml */])(htmlString);
+    const node = Object(__WEBPACK_IMPORTED_MODULE_0__utils_helper__["f" /* toHtml */])(htmlString);
     node.getElementById("clock-placeholder").append(this.clock.update());
     node.getElementById("options-placeholder").append(this.options.update({ isLogin: login}));
 
@@ -273,7 +262,7 @@ class HeaderComponent extends __WEBPACK_IMPORTED_MODULE_1__framework_Component__
 
 
 /***/ }),
-/* 4 */
+/* 3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -307,11 +296,11 @@ class FooterComponent extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__
 
 
 /***/ }),
-/* 5 */
+/* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_helper__ = __webpack_require__(1);
 
 
@@ -401,11 +390,42 @@ const AUTH_SERVICE = new AuthService();
 
 
 /***/ }),
+/* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+const API = {
+  BASE_URL: "https://pizza-tele.ga/",
+  ENDPOINTS: {
+    STORE_LIST: "api/v1/store/list",
+    CREATE_USER: "api/v1/user/create",
+    LOGIN: "api/v1/user/login",
+    MY_INFO: "api/v1/user/my_info",
+    PIZZA_LIST: "api/v1/pizza/list",
+    CREATE_PIZZA: "api/v1/pizza/create",
+    INGREDIENT_LIST: "api/v1/ingredient/list",
+    TAG_LIST: "api/v1/tag/list"
+  },
+  CRUST_PIZZA: "static/images/pizza.png"
+};
+/* harmony export (immutable) */ __webpack_exports__["a"] = API;
+
+
+// export const STATUS_CODES = {
+//   OK: "200",
+//   BAD_REQUEST: "400",
+//   UNAUTHORIZED: "401",
+//   FORBIDDEN: "403",
+//   NOT_FOUND: "404"
+// };
+
+
+/***/ }),
 /* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__AuthHttpService__ = __webpack_require__(7);
 
 
@@ -478,9 +498,9 @@ const PIZZA_DATA_SERVICE = new PizzaDataService();
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_helper__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__AuthService__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__AuthService__ = __webpack_require__(4);
 
 
 
@@ -494,7 +514,7 @@ class AuthHttpService {
     }
 
     return fetch(`${__WEBPACK_IMPORTED_MODULE_0__utils_config__["a" /* API */].BASE_URL}${endpoint}`, { headers })
-      .then(__WEBPACK_IMPORTED_MODULE_1__utils_helper__["d" /* processResponse */]);
+      .then(__WEBPACK_IMPORTED_MODULE_1__utils_helper__["e" /* processResponse */]);
   }
 
   post(endpoint, payload) {
@@ -503,7 +523,7 @@ class AuthHttpService {
       body: JSON.stringify(payload),
       headers: new Headers({ "content-type": "application/json" }),
     })
-      .then(__WEBPACK_IMPORTED_MODULE_1__utils_helper__["d" /* processResponse */]);
+      .then(__WEBPACK_IMPORTED_MODULE_1__utils_helper__["e" /* processResponse */]);
   }
   
   getStores() {
@@ -579,7 +599,7 @@ class Router extends __WEBPACK_IMPORTED_MODULE_0__Component__["a" /* default */]
     const { routes, currentRoute } = this.state;
 
     // const nextRoute = routes.find(({ href }) => href === this.path);
-    const nextRoute = routes.find(({ href }) => Object(__WEBPACK_IMPORTED_MODULE_1__utils_helper__["c" /* isEqualPaths */])(href, this.path));
+    const nextRoute = routes.find(({ href }) => Object(__WEBPACK_IMPORTED_MODULE_1__utils_helper__["d" /* isEqualPaths */])(href, this.path));
     console.log(nextRoute);
 
     if (nextRoute && nextRoute !== currentRoute) {
@@ -630,7 +650,7 @@ class Router extends __WEBPACK_IMPORTED_MODULE_0__Component__["a" /* default */]
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__services_AuthService__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__services_AuthService__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_Dashboard__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_Login__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_Register__ = __webpack_require__(17);
@@ -690,9 +710,9 @@ const routes = [
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Component__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HeaderComponent__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HeaderComponent__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__DashboardComponent__ = __webpack_require__(14);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__FooterComponent__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__FooterComponent__ = __webpack_require__(3);
 
 
 
@@ -780,7 +800,7 @@ class Clock extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__["a" /* de
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Component__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_AuthService__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_AuthService__ = __webpack_require__(4);
 
 
 
@@ -904,9 +924,9 @@ class DashboardComponent extends __WEBPACK_IMPORTED_MODULE_0__framework_Componen
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Component__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HeaderComponent__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HeaderComponent__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__LoginComponent__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__FooterComponent__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__FooterComponent__ = __webpack_require__(3);
 
 
 
@@ -942,7 +962,7 @@ class Login extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__["a" /* de
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Component__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_AuthService__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_AuthService__ = __webpack_require__(4);
 
 
 
@@ -1025,9 +1045,9 @@ class LoginComponent extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__[
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Component__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HeaderComponent__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HeaderComponent__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__RegisterComponent__ = __webpack_require__(18);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__FooterComponent__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__FooterComponent__ = __webpack_require__(3);
 
 
 
@@ -1201,9 +1221,9 @@ class RegisterComponent extends __WEBPACK_IMPORTED_MODULE_0__framework_Component
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__framework_Component__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HeaderComponent__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HeaderComponent__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__MyInfoComponent__ = __webpack_require__(20);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__FooterComponent__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__FooterComponent__ = __webpack_require__(3);
 
 
 
@@ -1295,10 +1315,10 @@ class MyInfoComponent extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_helper__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__framework_Component__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__HeaderComponent__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__HeaderComponent__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ComposerFormComponent__ = __webpack_require__(22);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ComposerViewComponent__ = __webpack_require__(24);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__FooterComponent__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__FooterComponent__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__services_PizzaDataService__ = __webpack_require__(6);
 
 
@@ -1367,7 +1387,7 @@ class PizzaComposer extends __WEBPACK_IMPORTED_MODULE_1__framework_Component__["
       <div id="footer"></div>
     `;
 
-    const node = Object(__WEBPACK_IMPORTED_MODULE_0__utils_helper__["e" /* toHtml */])(htmlString);
+    const node = Object(__WEBPACK_IMPORTED_MODULE_0__utils_helper__["f" /* toHtml */])(htmlString);
     node.getElementById("header").append(this.headerComponent.update({}));
     node.getElementById("data-placeholder").append(this.composerFormComponent.update({
       onDataChange: this.onDataChange
@@ -1390,7 +1410,7 @@ class PizzaComposer extends __WEBPACK_IMPORTED_MODULE_1__framework_Component__["
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_helper__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__framework_Component__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__ = __webpack_require__(6);
@@ -1547,7 +1567,7 @@ class ComposerFormComponent extends __WEBPACK_IMPORTED_MODULE_2__framework_Compo
       </form>
     `;
 
-    const node = Object(__WEBPACK_IMPORTED_MODULE_1__utils_helper__["e" /* toHtml */])(htmlString);
+    const node = Object(__WEBPACK_IMPORTED_MODULE_1__utils_helper__["f" /* toHtml */])(htmlString);
     const nodeElement = node.getElementById("create");
     this.sizesCollection = nodeElement.getElementsByClassName("size");
     this.ingredientsCollection = nodeElement.getElementsByClassName("ingredient");
@@ -1613,7 +1633,7 @@ class PriceComponent extends __WEBPACK_IMPORTED_MODULE_0__framework_Component__[
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_config__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_helper__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_Sprite__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__framework_Component__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__ = __webpack_require__(6);
@@ -1668,7 +1688,7 @@ class ComposerViewComponent extends __WEBPACK_IMPORTED_MODULE_2__framework_Compo
 
       ingredients.forEach(ingredient => {
         for (let i = 0; i < maxI; i++) {
-          const point = getPoint(this.canvasWidth, diameter, i, maxI);
+          const point = Object(__WEBPACK_IMPORTED_MODULE_0__utils_helper__["c" /* getPoint */])(this.canvasWidth, diameter, i, maxI);
           const ingrSprite = new __WEBPACK_IMPORTED_MODULE_1__services_Sprite__["a" /* default */](
             __WEBPACK_IMPORTED_MODULE_3__services_PizzaDataService__["a" /* PIZZA_DATA_SERVICE */].images[ingredient], 
             point.x, 
@@ -1686,25 +1706,6 @@ class ComposerViewComponent extends __WEBPACK_IMPORTED_MODULE_2__framework_Compo
 
     return this.canvas;
   }
-}
-
-function random(min, max) {
-  return min + Math.random() * (max - min + 1.0);
-}
-
-function getPoint(canvSize, diam, iter, maxIter) {
-  const radiusSquared = (diam - 63) * (diam - 63) / 4;
-  const randomRadius = Math.sqrt(random(0, radiusSquared));
-  const randomAngle = random(2 * iter * Math.PI / maxIter, 2 * (iter + 1) * Math.PI / maxIter);
-  const point = {
-    x: 0.0,
-    y: 0.0
-  };
-  const offset = canvSize / 2;
-  point.x = Math.floor(offset + randomRadius * Math.cos(randomAngle));
-  point.y = Math.floor(offset + randomRadius * Math.sin(randomAngle));
-  // console.log(radiusSquared, randomRadius, randomAngle, offset, point.x, point.y);
-  return point;
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (ComposerViewComponent);

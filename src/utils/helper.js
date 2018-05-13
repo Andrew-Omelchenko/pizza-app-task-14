@@ -50,3 +50,22 @@ export const processResponse = res => {
     }
   return res.json().then(answer => Promise.reject({ answer, status: res.status }));
 };
+
+function random(min, max) {
+  return min + Math.random() * (max - min + 1.0);
+};
+
+export function getPoint(canvSize, diam, iter, maxIter) {
+  const radiusSquared = (diam - 63) * (diam - 63) / 4;
+  const randomRadius = Math.sqrt(random(0, radiusSquared));
+  const randomAngle = random(2 * iter * Math.PI / maxIter, 2 * (iter + 1) * Math.PI / maxIter);
+  const point = {
+    x: 0.0,
+    y: 0.0
+  };
+  const offset = canvSize / 2;
+  point.x = Math.floor(offset + randomRadius * Math.cos(randomAngle));
+  point.y = Math.floor(offset + randomRadius * Math.sin(randomAngle));
+  // console.log(radiusSquared, randomRadius, randomAngle, offset, point.x, point.y);
+  return point;
+};

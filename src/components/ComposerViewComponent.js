@@ -1,4 +1,4 @@
-import { API } from "../utils/config";
+import { getPoint } from "../utils/helper";
 import Sprite from "../services/Sprite";
 import Component from "../framework/Component";
 import { PIZZA_DATA_SERVICE } from "../services/PizzaDataService";
@@ -67,25 +67,6 @@ class ComposerViewComponent extends Component {
 
     return this.canvas;
   }
-}
-
-function random(min, max) {
-  return min + Math.random() * (max - min + 1.0);
-}
-
-function getPoint(canvSize, diam, iter, maxIter) {
-  const radiusSquared = (diam - 63) * (diam - 63) / 4;
-  const randomRadius = Math.sqrt(random(0, radiusSquared));
-  const randomAngle = random(2 * iter * Math.PI / maxIter, 2 * (iter + 1) * Math.PI / maxIter);
-  const point = {
-    x: 0.0,
-    y: 0.0
-  };
-  const offset = canvSize / 2;
-  point.x = Math.floor(offset + randomRadius * Math.cos(randomAngle));
-  point.y = Math.floor(offset + randomRadius * Math.sin(randomAngle));
-  // console.log(radiusSquared, randomRadius, randomAngle, offset, point.x, point.y);
-  return point;
 }
 
 export default ComposerViewComponent;
